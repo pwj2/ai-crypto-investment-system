@@ -1,0 +1,97 @@
+{
+  "info": {
+    "_postman_id": "holdings-service-tests",
+    "name": "Holdings Service API Tests",
+    "description": "数字资产持仓服务的所有接口测试用例",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "消息采集",
+      "item": [
+        {
+          "name": "手动触发消息采集",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/tasks/collect-messages",
+              "host": ["{{baseUrl}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "消息查询",
+      "item": [
+        {
+          "name": "查询所有消息",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/messages",
+              "host": ["{{baseUrl}}"]
+            }
+          }
+        },
+        {
+          "name": "分页查询消息",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/messages/page?pageNum=0&pageSize=10",
+              "host": ["{{baseUrl}}"]
+            }
+          }
+        },
+        {
+          "name": "按币种查询消息",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/messages/coin/BTC",
+              "host": ["{{baseUrl}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "AI分析",
+      "item": [
+        {
+          "name": "分析消息",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/tasks/analyze-message/1",
+              "host": ["{{baseUrl}}"]
+            }
+          }
+        },
+        {
+          "name": "生成持仓调整建议",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/tasks/generate-adjust-suggest/1",
+              "host": ["{{baseUrl}}"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    }
+  ]
+}
