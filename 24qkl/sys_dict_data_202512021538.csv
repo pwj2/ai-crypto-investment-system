@@ -1,0 +1,62 @@
+"dict_code","dict_sort","dict_label","dict_value","dict_type","css_class","list_class","is_default","status","create_by","create_time","update_by","update_time","remark"
+1,1,男,"0",sys_user_sex,"","",Y,1,admin,"2024-06-13 16:06:36","","",性别男
+2,2,女,"1",sys_user_sex,"","",N,1,admin,"2024-06-13 16:06:36","","",性别女
+3,3,未知,"2",sys_user_sex,"","",N,1,admin,"2024-06-13 16:06:36","","",性别未知
+4,1,显示,"1",sys_show_hide,"",primary,Y,1,admin,"2024-06-13 16:06:36",admin,"2024-07-10 16:34:54",显示菜单
+5,2,隐藏,"0",sys_show_hide,"",danger,N,1,admin,"2024-06-13 16:06:36",admin,"2024-07-10 16:35:07",隐藏菜单
+6,1,正常,"1",sys_normal_disable,"",primary,Y,1,admin,"2024-06-13 16:06:36",admin,"2024-07-10 14:30:58",正常状态
+7,2,停用,"0",sys_normal_disable,"",danger,N,1,admin,"2024-06-13 16:06:36",admin,"2024-07-10 14:31:06",停用状态
+12,1,是,Y,sys_yes_no,"",primary,Y,1,admin,"2024-06-13 16:06:36","","",系统默认是
+13,2,否,N,sys_yes_no,"",danger,N,1,admin,"2024-06-13 16:06:36","","",系统默认否
+14,1,通知,"1",sys_notice_type,"",warning,Y,1,admin,"2024-06-13 16:06:36","","",通知
+15,2,公告,"2",sys_notice_type,"",success,N,1,admin,"2024-06-13 16:06:36","","",公告
+16,1,正常,"1",sys_notice_status,"",primary,Y,1,admin,"2024-06-13 16:06:36",admin,"2024-07-10 17:24:35",正常状态
+17,2,关闭,"0",sys_notice_status,"",danger,N,1,admin,"2024-06-13 16:06:36",admin,"2024-07-10 17:24:44",关闭状态
+18,1,新增,"1",sys_oper_type,"",info,N,1,admin,"2024-06-13 16:06:36","","",新增操作
+19,2,修改,"2",sys_oper_type,"",info,N,1,admin,"2024-06-13 16:06:36","","",修改操作
+20,3,删除,"3",sys_oper_type,"",danger,N,1,admin,"2024-06-13 16:06:37","","",删除操作
+21,4,授权,"4",sys_oper_type,"",primary,N,1,admin,"2024-06-13 16:06:37","","",授权操作
+22,5,导出,"5",sys_oper_type,"",warning,N,1,admin,"2024-06-13 16:06:37","","",导出操作
+23,6,导入,"6",sys_oper_type,"",warning,N,1,admin,"2024-06-13 16:06:37","","",导入操作
+24,7,强退,"7",sys_oper_type,"",danger,N,1,admin,"2024-06-13 16:06:37","","",强退操作
+25,8,生成代码,"8",sys_oper_type,"",warning,N,1,admin,"2024-06-13 16:06:37","","",生成操作
+26,9,清空数据,"9",sys_oper_type,"",danger,N,1,admin,"2024-06-13 16:06:37","","",清空操作
+27,1,失败,"0",sys_common_status,"",danger,N,1,admin,"2024-06-13 16:06:37",admin,"2024-07-15 10:50:52",正常状态
+28,2,成功,"1",sys_common_status,"",success,N,1,admin,"2024-06-13 16:06:37",admin,"2024-07-15 10:51:05",停用状态
+29,99,其他,"0",sys_oper_type,"",info,N,1,admin,"2024-06-13 16:06:36","","",其他操作
+1812692503272718338,0,客户,"1",merchant_type,"",default,N,1,admin,"2024-07-15 11:35:46",admin,"2024-07-16 11:21:11",""
+1812694839395135489,1,供应商,"2",merchant_type,"",default,N,1,admin,"2024-07-15 11:45:03",admin,"2024-07-16 11:21:29",""
+1813051377282904066,3,客户/供应商,"3",merchant_type,"",default,N,1,admin,"2024-07-16 11:21:48",admin,"2024-07-16 11:21:48",""
+1813153852862160897,0,未入库,"0",wms_receipt_status,"",info,N,1,admin,"2024-07-16 18:09:00",admin,"2024-07-22 09:38:14",""
+1813153899775451137,1,已入库,"1",wms_receipt_status,"",primary,N,1,admin,"2024-07-16 18:09:11",admin,"2024-07-22 09:38:22",""
+1813397339171905537,3,作废,-1,wms_receipt_status,"",danger,N,1,admin,"2024-07-17 10:16:32",admin,"2024-07-22 09:38:29",""
+1814219171351085057,0,生产入库,"1",wms_receipt_type,"",primary,N,1,admin,"2024-07-19 16:42:12",admin,"2024-07-22 09:38:50",""
+1814219220520910849,1,采购入库,"2",wms_receipt_type,"",primary,N,1,admin,"2024-07-19 16:42:23",admin,"2024-07-22 09:38:56",""
+1814219269975949313,2,退货入库,"3",wms_receipt_type,"",primary,N,1,admin,"2024-07-19 16:42:35",admin,"2024-07-22 09:39:01",""
+1814219304272773121,3,归还入库,"4",wms_receipt_type,"",primary,N,1,admin,"2024-07-19 16:42:43",admin,"2024-07-22 09:39:06",""
+1818850397680640002,2,作废,-1,wms_shipment_status,"",danger,N,1,admin,"2024-08-01 11:25:02",admin,"2024-08-01 14:25:24",""
+1818850512650706945,0,未出库,"0",wms_shipment_status,"",info,N,1,admin,"2024-08-01 11:25:29",admin,"2024-08-01 14:25:37",""
+1818850565389885441,1,已出库,"1",wms_shipment_status,"",primary,N,1,admin,"2024-08-01 11:25:42",admin,"2024-08-01 14:25:32",""
+1818850814351187969,0,退货出库,"1",wms_shipment_type,"",default,N,1,admin,"2024-08-01 11:26:41",admin,"2024-08-01 11:26:41",""
+1818850852594851841,1,销售出库,"2",wms_shipment_type,"",default,N,1,admin,"2024-08-01 11:26:51",admin,"2024-08-01 11:26:51",""
+1818850884714831874,2,生产出库,"3",wms_shipment_type,"",default,N,1,admin,"2024-08-01 11:26:58",admin,"2024-08-01 11:26:58",""
+1821067084643434498,0,入库,"1",wms_inventory_history_type,"",primary,N,1,admin,"2024-08-07 14:13:21",admin,"2024-08-07 14:57:41",""
+1821067144441626625,1,出库,"2",wms_inventory_history_type,"",primary,N,1,admin,"2024-08-07 14:13:36",admin,"2024-08-07 14:57:47",""
+1821067181917732866,2,移库,"3",wms_inventory_history_type,"",primary,N,1,admin,"2024-08-07 14:13:45",admin,"2024-08-07 14:57:54",""
+1821067222455681026,3,盘库,"4",wms_inventory_history_type,"",primary,N,1,admin,"2024-08-07 14:13:54",admin,"2024-08-07 14:58:06",""
+1822820748966006786,0,未移库,"0",wms_movement_status,"",info,N,1,admin,"2024-08-12 10:21:48",admin,"2024-08-12 10:21:48",""
+1822820794864275457,1,已移库,"1",wms_movement_status,"",primary,N,1,admin,"2024-08-12 10:21:59",admin,"2024-08-12 10:21:59",""
+1822820855526494210,2,作废,-1,wms_movement_status,"",danger,N,1,admin,"2024-08-12 10:22:13",admin,"2024-08-12 10:22:13",""
+1823182345731391489,0,待盘库,"0",wms_check_status,"",info,N,1,admin,"2024-08-13 10:18:39",admin,"2024-08-13 10:18:39",""
+1823182400756465666,1,已盘库,"1",wms_check_status,"",primary,N,1,admin,"2024-08-13 10:18:52",admin,"2024-08-13 10:18:52",""
+1823182471136886786,2,作废,-1,wms_check_status,"",danger,N,1,admin,"2024-08-13 10:19:09",admin,"2024-08-13 10:19:09",""
+200,1,BTC,BTC,crypto_currency_type,"",primary,Y,1,admin,"2025-11-15 15:08:47",,,比特币
+201,2,ETH,ETH,crypto_currency_type,"",primary,N,1,admin,"2025-11-15 15:08:47",,,以太坊
+202,3,SOL,SOL,crypto_currency_type,"",primary,N,1,admin,"2025-11-15 15:08:47",,,Solana
+203,4,USDT,USDT,crypto_currency_type,"",default,N,1,admin,"2025-11-15 15:08:47",,,泰达币
+204,1,利好,positive,crypto_sentiment_type,"",success,N,1,admin,"2025-11-15 15:08:47",,,利好消息
+205,2,利空,negative,crypto_sentiment_type,"",danger,N,1,admin,"2025-11-15 15:08:47",,,利空消息
+206,3,中性,neutral,crypto_sentiment_type,"",info,N,1,admin,"2025-11-15 15:08:47",,,中性消息
+207,1,待审核,"0",crypto_report_status,"",info,N,1,admin,"2025-11-15 15:08:47",,,待审核状态
+208,2,已通过,"1",crypto_report_status,"",success,N,1,admin,"2025-11-15 15:08:47",,,审核通过
+209,3,已驳回,"2",crypto_report_status,"",danger,N,1,admin,"2025-11-15 15:08:47",,,审核驳回

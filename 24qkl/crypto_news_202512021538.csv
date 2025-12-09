@@ -1,0 +1,6 @@
+"id","coin_type","news_title","news_content","news_url","sentiment","news_source","news_time","create_by","create_time","update_by","update_time","remark"
+1940000001,BTC,比特币ETF资金持续流入,Grayscale比特币ETF连续多日资金净流入，机构投资者兴趣增加，市场预期积极。,https://coingecko.com/news/123,利好,CoinGecko,"2025-10-28 08:00:00",admin,"2025-11-15 17:22:00","","",""
+1940000002,ETH,以太坊2.0升级进展顺利,以太坊开发团队宣布2.0升级按计划进行，性能提升显著，网络费用降低。,https://binance.com/news/456,利好,Binance,"2025-10-28 08:10:00",admin,"2025-11-15 17:22:25","","",""
+1940000003,SOL,Solana网络出现短暂拥堵,Solana网络因NFT铸造活动出现短暂拥堵，交易延迟增加。,https://coingecko.com/news/789,利空,CoinGecko,"2025-10-28 08:20:00",admin,"2025-11-15 17:22:49","","",""
+1940000004,BTC,美联储政策影响加密市场,美联储维持利率不变，比特币价格短期承压。,https://binance.com/news/101,利空,Binance,"2025-10-28 08:30:00",admin,"2025-11-15 17:22:56","","",""
+1940000005,ETH,以太坊Layer2解决方案获得重大突破,多个以太坊Layer2解决方案宣布技术突破，交易成本大幅降低。,https://coingecko.com/news/112,利好,CoinGecko,"2025-10-28 08:40:00",admin,"2025-11-15 17:23:03","","",""
