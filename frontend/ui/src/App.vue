@@ -1,20 +1,27 @@
 <template>
   <div class="app-container">
-    <el-container>
-      <el-aside width="200px" class="sidebar-container">
-        <Sidebar />
-      </el-aside>
+    <template v-if="$route.path === '/login'">
+      <!-- 登录页面布局 -->
+      <router-view />
+    </template>
+    <template v-else>
+      <!-- 主应用布局 -->
       <el-container>
-        <el-header class="header-container">
-          <div class="header-title">
-            <h1>AI 加密货币投资系统</h1>
-          </div>
-        </el-header>
-        <el-main class="main-container">
-          <router-view />
-        </el-main>
+        <el-aside width="200px" class="sidebar-container">
+          <Sidebar />
+        </el-aside>
+        <el-container>
+          <el-header class="header-container">
+            <div class="header-title">
+              <h1>AI 加密货币投资系统</h1>
+            </div>
+          </el-header>
+          <el-main class="main-container">
+            <router-view />
+          </el-main>
+        </el-container>
       </el-container>
-    </el-container>
+    </template>
   </div>
 </template>
 

@@ -7,13 +7,13 @@ export const holdingsService = {
   },
   
   // 获取历史持仓
-  getHoldingsHistory: () => {
-    return axios.get('/holdings/history')
+  getHoldingsHistory: (params = {}) => {
+    return axios.get('/holdings/history', { params })
   },
   
   // 更新持仓
   updateHoldings: (holdings) => {
-    return axios.post('/holdings/update', holdings)
+    return axios.post('/holdings', holdings)
   },
   
   // 根据ID获取持仓详情

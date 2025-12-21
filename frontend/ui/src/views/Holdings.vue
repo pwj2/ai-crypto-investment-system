@@ -4,7 +4,7 @@
       <template #header>
         <div class="card-header">
           <h2>当前持仓</h2>
-          <el-button type="primary" @click="showUpdateDialog = true">更新持仓</el-button>
+          <el-button type="primary" @click="openUpdateDialog">更新持仓</el-button>
         </div>
       </template>
       
@@ -28,7 +28,11 @@
             border
           >
             <el-table-column prop="id" label="ID" width="80"></el-table-column>
-            <el-table-column prop="coinName" label="货币名称" width="120"></el-table-column>
+            <el-table-column label="货币名称" width="120">
+              <template #default="scope">
+                {{ coinNameMap[scope.row.coinName] || scope.row.coinName }}
+              </template>
+            </el-table-column>
             <el-table-column prop="coinType" label="货币类型" width="100"></el-table-column>
             <el-table-column prop="quantity" label="数量" width="120">
               <template #default="scope">
@@ -73,14 +77,21 @@
           style="width: 100%"
           border
         >
-          <el-table-column prop="coinName" label="货币名称" width="150">
+          <el-table-column prop="coinName" label="货币名称" width="180">
             <template #default="scope">
-              <el-input v-model="scope.row.coinName" placeholder="请输入货币名称"></el-input>
+              <el-select v-model="scope.row.coinName" placeholder="请选择货币名称" @change="updateCoinType(scope.row)">
+                <el-option
+                  v-for="currency in cryptoCurrencies"
+                  :key="currency.value"
+                  :label="currency.label"
+                  :value="currency.value"
+                ></el-option>
+              </el-select>
             </template>
           </el-table-column>
           <el-table-column prop="coinType" label="货币类型" width="120">
             <template #default="scope">
-              <el-input v-model="scope.row.coinType" placeholder="请输入货币类型"></el-input>
+              <el-input v-model="scope.row.coinType" placeholder="请输入货币类型" readonly></el-input>
             </template>
           </el-table-column>
           <el-table-column prop="quantity" label="数量" width="120">
@@ -129,8 +140,10 @@
 
 <script>
 import { defineComponent, ref, onMounted, onUnmounted } from 'vue'
-import * as echarts from 'echarts'
+import { ElMessage } from 'element-plus'
 import { holdingsService } from '../services/holdingsService'
+// 使用动态导入echarts，只在需要时加载
+let echarts = null
 
 export default defineComponent({
   name: 'Holdings',
@@ -141,24 +154,74 @@ export default defineComponent({
     const showUpdateDialog = ref(false)
     const updateForm = ref({ holdings: [] })
     
+    // 常用加密货币列表
+    const cryptoCurrencies = [
+      { value: 'BTC', label: '比特币 (BTC)' },
+      { value: 'ETH', label: '以太坊 (ETH)' },
+      { value: 'SOL', label: 'Solana (SOL)' },
+      { value: 'USDT', label: 'Tether (USDT)' },
+      { value: 'BNB', label: '币安币 (BNB)' },
+      { value: 'ADA', label: '卡尔达诺 (ADA)' },
+      { value: 'XRP', label: '瑞波币 (XRP)' },
+      { value: 'DOT', label: '波卡 (DOT)' },
+      { value: 'DOGE', label: '狗狗币 (DOGE)' },
+      { value: 'AVAX', label: 'Avalanche (AVAX)' }
+    ]
+    
+    // 货币名称映射表
+    const coinNameMap = {
+      'BTC': '比特币',
+      'ETH': '以太坊',
+      'SOL': 'Solana',
+      'USDT': 'Tether',
+      'BNB': '币安币',
+      'ADA': '卡尔达诺',
+      'XRP': '瑞波币',
+      'DOT': '波卡',
+      'DOGE': '狗狗币',
+      'AVAX': 'Avalanche'
+    }
+    
     // 获取当前持仓
     const fetchHoldings = async () => {
       try {
         const data = await holdingsService.getCurrentHoldings()
-        holdings.value = data
-        initChart(data)
+        // 映射后端数据到前端期望的格式
+        const formattedData = data.map(item => ({
+      id: item.id,
+      coinName: item.type,
+      coinType: item.type,
+      quantity: item.quantity,
+      price: item.price,
+      totalValue: item.totalValue,
+      proportion: 0, // 计算占比
+      updatedTime: new Date().toISOString() // 模拟更新时间
+    }))
+        
+        // 计算占比
+        const total = formattedData.reduce((sum, item) => sum + item.totalValue, 0)
+        formattedData.forEach(item => {
+          item.proportion = total > 0 ? ((item.totalValue / total) * 100).toFixed(2) : 0
+        })
+        
+        holdings.value = formattedData
+        initChart(formattedData)
       } catch (error) {
         console.error('获取持仓失败:', error)
       }
     }
     
     // 初始化图表
-    const initChart = (data) => {
+    const initChart = async (data) => {
       if (chartRef.value) {
+        // 动态加载echarts
+        if (!echarts) {
+          echarts = await import('echarts')
+        }
         chart = echarts.init(chartRef.value)
         
         const chartData = data.map(item => ({
-          name: item.coinName,
+          name: coinNameMap[item.coinName] || item.coinName,
           value: item.totalValue
         }))
         
@@ -198,6 +261,18 @@ export default defineComponent({
       return date.toLocaleString()
     }
     
+    // 打开更新对话框
+    const openUpdateDialog = () => {
+      // 只包含当前已有的持仓数据
+      updateForm.value.holdings = holdings.value.map(item => ({
+        coinName: item.coinName,
+        coinType: item.coinType,
+        quantity: item.quantity,
+        price: item.price
+      }))
+      showUpdateDialog.value = true
+    }
+    
     // 处理对话框关闭
     const handleClose = () => {
       updateForm.value.holdings = []
@@ -213,6 +288,15 @@ export default defineComponent({
       })
     }
     
+    // 监听货币名称变化，自动设置货币类型
+    const updateCoinType = (row) => {
+      if (row.coinName) {
+        row.coinType = row.coinName
+      } else {
+        row.coinType = ''
+      }
+    }
+    
     // 删除资产
     const removeHolding = (index) => {
       updateForm.value.holdings.splice(index, 1)
@@ -221,7 +305,15 @@ export default defineComponent({
     // 提交更新
     const submitUpdate = async () => {
       try {
-        await holdingsService.updateHoldings(updateForm.value.holdings)
+        // 格式化数据以匹配后端期望的格式
+        const formattedHoldings = updateForm.value.holdings.map(holding => ({
+          type: holding.coinType,  // 将coinType改为type
+          quantity: holding.quantity,
+          price: holding.price,
+          totalValue: holding.quantity * holding.price  // 计算并添加totalValue字段
+        }))
+        
+        await holdingsService.updateHoldings(formattedHoldings)
         showUpdateDialog.value = false
         fetchHoldings()
         ElMessage.success('持仓更新成功')
@@ -251,7 +343,11 @@ export default defineComponent({
       handleClose,
       addHolding,
       removeHolding,
-      submitUpdate
+      submitUpdate,
+      openUpdateDialog,
+      cryptoCurrencies,
+      updateCoinType,
+      coinNameMap
     }
   }
 })

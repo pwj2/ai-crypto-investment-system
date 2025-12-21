@@ -90,8 +90,9 @@
 
 <script>
 import { defineComponent, ref, onMounted, onUnmounted } from 'vue'
-import * as echarts from 'echarts'
 import { holdingsService } from '../services/holdingsService'
+// 使用动态导入echarts，只在需要时加载
+let echarts = null
 
 export default defineComponent({
   name: 'History',
@@ -117,10 +118,27 @@ export default defineComponent({
     const fetchHistory = async () => {
       loading.value = true
       try {
-        const data = await holdingsService.getHoldingsHistory()
+        // 准备查询参数
+        const params = {}
+        if (dateRange.value.length === 2) {
+          params.startDate = dateRange.value[0]
+          params.endDate = dateRange.value[1]
+        }
+        if (selectedCoin.value) {
+          params.coinType = selectedCoin.value
+        }
+        
+        const data = await holdingsService.getHoldingsHistory(params)
         historyData.value = data
         total.value = data.length
-        initChart(data)
+        
+        // 只有当图表未初始化且数据不为空时，才尝试初始化图表
+        if (!chart && historyData.value.length > 0 && chartRef.value) {
+          const isVisible = chartRef.value.getBoundingClientRect().top < window.innerHeight + 100
+          if (isVisible) {
+            initChart(data)
+          }
+        }
       } catch (error) {
         console.error('获取历史持仓失败:', error)
       } finally {
@@ -128,59 +146,73 @@ export default defineComponent({
       }
     }
     
-    // 初始化图表
+    // 防抖函数
+    const debounce = (func, delay) => {
+      let timer
+      return function(...args) {
+        clearTimeout(timer)
+        timer = setTimeout(() => func.apply(this, args), delay)
+      }
+    }
+    
+    // 初始化图表（使用懒加载）
     const initChart = (data) => {
-      if (chartRef.value) {
-        chart = echarts.init(chartRef.value)
+      if (chartRef.value && !chart) {
+        // 检查图表是否在视口中
+        const isVisible = chartRef.value.getBoundingClientRect().top < window.innerHeight + 100
         
-        // 按时间分组数据
-        const timeMap = new Map()
-        data.forEach(item => {
-          const date = new Date(item.updatedTime).toLocaleDateString()
-          if (!timeMap.has(date)) {
-            timeMap.set(date, { date })
-          }
-          timeMap.get(date)[item.coinType] = item.totalValue
-        })
-        
-        const sortedDates = Array.from(timeMap.keys()).sort()
-        const series = ['BTC', 'ETH', 'SOL', 'AVAX'].map(coinType => {
-          return {
-            name: coinType,
-            type: 'line',
-            smooth: true,
-            data: sortedDates.map(date => timeMap.get(date)[coinType] || 0)
-          }
-        })
-        
-        const option = {
-          tooltip: {
-            trigger: 'axis'
-          },
-          legend: {
-            data: ['BTC', 'ETH', 'SOL', 'AVAX']
-          },
-          grid: {
-            left: '3%',
-            right: '4%',
-            bottom: '3%',
-            containLabel: true
-          },
-          xAxis: {
-            type: 'category',
-            boundaryGap: false,
-            data: sortedDates
-          },
-          yAxis: {
-            type: 'value',
-            axisLabel: {
-              formatter: '${value}'
+        if (isVisible) {
+          chart = echarts.init(chartRef.value)
+          
+          // 按时间分组数据（优化数据处理）
+          const timeMap = new Map()
+          data.forEach(item => {
+            const date = new Date(item.updatedTime).toLocaleDateString()
+            if (!timeMap.has(date)) {
+              timeMap.set(date, { date })
             }
-          },
-          series: series
+            timeMap.get(date)[item.coinType] = item.totalValue
+          })
+          
+          const sortedDates = Array.from(timeMap.keys()).sort()
+          const series = ['BTC', 'ETH', 'SOL', 'AVAX'].map(coinType => {
+            return {
+              name: coinType,
+              type: 'line',
+              smooth: true,
+              data: sortedDates.map(date => timeMap.get(date)[coinType] || 0)
+            }
+          })
+          
+          const option = {
+            tooltip: {
+              trigger: 'axis'
+            },
+            legend: {
+              data: ['BTC', 'ETH', 'SOL', 'AVAX']
+            },
+            grid: {
+              left: '3%',
+              right: '4%',
+              bottom: '3%',
+              containLabel: true
+            },
+            xAxis: {
+              type: 'category',
+              boundaryGap: false,
+              data: sortedDates
+            },
+            yAxis: {
+              type: 'value',
+              axisLabel: {
+                formatter: '${value}'
+              }
+            },
+            series: series
+          }
+          
+          chart.setOption(option)
         }
-        
-        chart.setOption(option)
       }
     }
     
@@ -192,8 +224,9 @@ export default defineComponent({
     
     // 处理日期范围变化
     const handleDateChange = () => {
-      // 实现日期筛选逻辑
+      // 日期范围变化时重新获取数据
       console.log('日期范围变化:', dateRange.value)
+      fetchHistory()
     }
     
     // 处理当前页变化
@@ -209,14 +242,40 @@ export default defineComponent({
       // 实现分页逻辑
     }
     
+    // 窗口大小变化处理（防抖）
+    const handleResize = debounce(() => {
+      chart?.resize()
+    }, 100)
+    
+    // 滚动事件处理（用于检测图表是否进入视口）
+    const handleScroll = debounce(() => {
+      if (!chart && chartRef.value && historyData.value.length > 0) {
+        initChart(historyData.value)
+      }
+    }, 100)
+    
     onMounted(() => {
       fetchHistory()
-      window.addEventListener('resize', () => chart?.resize())
+      
+      // 监听窗口大小变化
+      window.addEventListener('resize', handleResize)
+      
+      // 监听滚动事件用于懒加载
+      window.addEventListener('scroll', handleScroll)
+      
+      // 保存事件处理函数以便清理
+      window.__historyResizeHandler = handleResize
+      window.__historyScrollHandler = handleScroll
     })
     
     onUnmounted(() => {
-      window.removeEventListener('resize', () => chart?.resize())
+      // 清理资源
+      window.removeEventListener('resize', window.__historyResizeHandler)
+      window.removeEventListener('scroll', window.__historyScrollHandler)
+      
+      // 销毁图表实例
       chart?.dispose()
+      chart = null
     })
     
     return {
