@@ -124,8 +124,9 @@
 
 <script>
 import { defineComponent, ref, onMounted, onUnmounted } from 'vue'
-import * as echarts from 'echarts'
 import { reportService } from '../services/reportService'
+// 使用动态导入echarts，只在需要时加载
+let echarts = null
 
 export default defineComponent({
   name: 'MessageAnalytics',
@@ -162,10 +163,25 @@ export default defineComponent({
       }
     }
     
-    // 初始化图表
-    const initCharts = () => {
-      // 情感分析饼图
-      if (sentimentChartRef.value) {
+    // 防抖函数
+    const debounce = (func, delay) => {
+      let timer
+      return function(...args) {
+        clearTimeout(timer)
+        timer = setTimeout(() => func.apply(this, args), delay)
+      }
+    }
+    
+    // 检查元素是否在视口中
+    const isElementVisible = (element) => {
+      if (!element) return false
+      const rect = element.getBoundingClientRect()
+      return rect.top < window.innerHeight + 100
+    }
+    
+    // 初始化情感分析饼图（懒加载）
+    const initSentimentChart = () => {
+      if (sentimentChartRef.value && !sentimentChart && isElementVisible(sentimentChartRef.value)) {
         sentimentChart = echarts.init(sentimentChartRef.value)
         const sentimentOption = {
           tooltip: {
@@ -212,9 +228,11 @@ export default defineComponent({
         }
         sentimentChart.setOption(sentimentOption)
       }
-      
-      // 消息趋势图
-      if (trendChartRef.value) {
+    }
+    
+    // 初始化消息趋势图（懒加载）
+    const initTrendChart = () => {
+      if (trendChartRef.value && !trendChart && isElementVisible(trendChartRef.value)) {
         trendChart = echarts.init(trendChartRef.value)
         const trendOption = {
           tooltip: {
@@ -272,6 +290,12 @@ export default defineComponent({
       }
     }
     
+    // 初始化图表（懒加载）
+    const initCharts = () => {
+      initSentimentChart()
+      initTrendChart()
+    }
+    
     // 格式化日期
     const formatDate = (dateString) => {
       const date = new Date(dateString)
@@ -289,21 +313,51 @@ export default defineComponent({
       ElMessage.info('查看报告功能待实现')
     }
     
+    // 窗口大小变化处理（防抖）
+    const handleResize = debounce(() => {
+      sentimentChart?.resize()
+      trendChart?.resize()
+    }, 100)
+    
+    // 滚动事件处理（用于检测图表是否进入视口）
+    const handleScroll = debounce(() => {
+      initSentimentChart()
+      initTrendChart()
+      
+      // 如果两个图表都已初始化，停止监听
+      if (sentimentChart && trendChart) {
+        window.removeEventListener('scroll', handleScroll)
+      }
+    }, 100)
+    
     onMounted(() => {
       fetchAnalyticsReports()
-      window.addEventListener('resize', () => {
-        sentimentChart?.resize()
-        trendChart?.resize()
-      })
+      
+      // 初始检查图表是否可见
+      initCharts()
+      
+      // 监听窗口大小变化
+      window.addEventListener('resize', handleResize)
+      
+      // 监听滚动事件用于懒加载
+      window.addEventListener('scroll', handleScroll)
+      
+      // 保存事件处理函数以便清理
+      window.__analyticsResizeHandler = handleResize
+      window.__analyticsScrollHandler = handleScroll
     })
     
     onUnmounted(() => {
-      window.removeEventListener('resize', () => {
-        sentimentChart?.resize()
-        trendChart?.resize()
-      })
+      // 清理资源
+      window.removeEventListener('resize', window.__analyticsResizeHandler)
+      window.removeEventListener('scroll', window.__analyticsScrollHandler)
+      
+      // 销毁图表实例
       sentimentChart?.dispose()
       trendChart?.dispose()
+      
+      sentimentChart = null
+      trendChart = null
     })
     
     return {

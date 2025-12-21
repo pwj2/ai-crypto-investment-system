@@ -81,9 +81,18 @@ export default defineComponent({
     const fetchAuditRecords = async () => {
       loading.value = true
       try {
-        const data = await auditService.getAuditRecords()
-        auditRecords.value = data
-        total.value = data.length
+        const response = await auditService.getAuditRecords(currentPage.value, pageSize.value)
+        // 将下划线命名转换为驼峰命名
+        auditRecords.value = response.data.map(record => ({
+          id: record.id,
+          operationType: record.operation_type,
+          operationUser: record.operation_user,
+          operationTime: record.operation_time,
+          operationContent: record.operation_content,
+          operationResult: record.operation_result,
+          ipAddress: record.ip_address
+        }))
+        total.value = response.pagination.total
       } catch (error) {
         console.error('获取审计记录失败:', error)
       } finally {
@@ -112,14 +121,14 @@ export default defineComponent({
     // 处理当前页变化
     const handleCurrentChange = (val) => {
       currentPage.value = val
-      // 实现分页逻辑
+      fetchAuditRecords()
     }
     
     // 处理每页条数变化
     const handleSizeChange = (val) => {
       pageSize.value = val
       currentPage.value = 1
-      // 实现分页逻辑
+      fetchAuditRecords()
     }
     
     onMounted(() => {

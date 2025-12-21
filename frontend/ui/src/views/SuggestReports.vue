@@ -123,7 +123,7 @@
 <script>
 import { defineComponent, ref, onMounted } from 'vue'
 import { reportService } from '../services/reportService'
-import { reviewService } from '../services/reviewService'
+import { ElMessage, ElMessageBox } from 'element-plus'
 
 export default defineComponent({
   name: 'SuggestReports',
@@ -145,9 +145,17 @@ export default defineComponent({
     const fetchReports = async () => {
       loading.value = true
       try {
-        const data = await reportService.getSuggestReports()
-        reports.value = data
-        total.value = data.length
+        const response = await reportService.getSuggestReports(currentPage.value, pageSize.value)
+        // 映射后端返回的字段名到前端期望的格式
+        reports.value = response.data.map(item => ({
+          id: item.id,
+          reportName: item.report_name,
+          content: item.report_content,
+          status: item.status,
+          createdTime: item.create_time,
+          updatedTime: item.update_time
+        }))
+        total.value = response.pagination.total
       } catch (error) {
         console.error('获取建议报告失败:', error)
       } finally {
@@ -170,7 +178,7 @@ export default defineComponent({
     // 审核通过
     const approveReport = async (reportId) => {
       try {
-        await reviewService.approveReport(reportId)
+        await reportService.updateSuggestReportStatus(reportId, 'approved')
         ElMessage.success('报告审核通过')
         fetchReports()
       } catch (error) {
@@ -182,21 +190,12 @@ export default defineComponent({
     // 审核驳回
     const rejectReport = async (reportId) => {
       try {
-        const reason = await ElMessageBox.prompt('请输入驳回原因:', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消'
-        })
-        
-        if (reason.value) {
-          await reviewService.rejectReport(reportId, reason.value)
-          ElMessage.success('报告已驳回')
-          fetchReports()
-        }
+        await reportService.updateSuggestReportStatus(reportId, 'rejected')
+        ElMessage.success('报告已驳回')
+        fetchReports()
       } catch (error) {
         console.error('审核驳回失败:', error)
-        if (error !== 'cancel') {
-          ElMessage.error('审核驳回失败')
-        }
+        ElMessage.error('审核驳回失败')
       }
     }
     
@@ -222,14 +221,14 @@ export default defineComponent({
     // 处理当前页变化
     const handleCurrentChange = (val) => {
       currentPage.value = val
-      // 实现分页逻辑
+      fetchReports()
     }
     
     // 处理每页条数变化
     const handleSizeChange = (val) => {
       pageSize.value = val
       currentPage.value = 1
-      // 实现分页逻辑
+      fetchReports()
     }
     
     onMounted(() => {
