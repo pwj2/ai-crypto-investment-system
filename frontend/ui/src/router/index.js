@@ -44,6 +44,11 @@ const routes = [
     path: '/tasks',
     name: 'Tasks',
     component: () => import('../views/Tasks.vue')
+  },
+  {
+    path: '/debug-monitor',
+    name: 'DebugMonitor',
+    component: () => import('../views/DebugMonitor.vue')
   }
 ]
 

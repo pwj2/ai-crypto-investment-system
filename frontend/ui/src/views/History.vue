@@ -1,6 +1,6 @@
 <template>
   <div class="history-container">
-    <el-card shadow="hover">
+    <el-card shadow="hover" class="animate-fadeIn">
       <template #header>
         <div class="card-header">
           <h2>持仓历史</h2>
@@ -26,9 +26,24 @@
         </div>
       </template>
       
+      <!-- 错误状态显示 -->
+      <el-alert
+        v-if="error"
+        title="数据加载失败"
+        description="系统无法加载持仓历史数据，请稍后重试。"
+        type="error"
+        :closable="false"
+        show-icon
+        class="history-error animate-fadeIn"
+      >
+        <template #default>
+          <el-button size="small" type="primary" @click="reloadData">重新加载</el-button>
+        </template>
+      </el-alert>
+      
       <div class="history-content">
         <div class="history-chart">
-          <el-card shadow="hover" class="chart-card">
+          <el-card shadow="hover" class="chart-card animate-slideInLeft" style="animation-delay: 0.2s;">
             <template #header>
               <div class="chart-header">
                 <h3>资产变化趋势</h3>
@@ -40,11 +55,12 @@
         
         <div class="history-table">
           <el-table
-            :data="historyData"
-            style="width: 100%"
+            :data="paginatedData"
+            style="width: 100%; animation-delay: 0.4s;"
             stripe
             border
             v-loading="loading"
+            class="animate-fadeIn"
           >
             <el-table-column prop="id" label="ID" width="80"></el-table-column>
             <el-table-column prop="coinName" label="货币名称" width="120"></el-table-column>
@@ -89,7 +105,7 @@
 </template>
 
 <script>
-import { defineComponent, ref, onMounted, onUnmounted } from 'vue'
+import { defineComponent, ref, computed, onMounted, onUnmounted } from 'vue'
 import { holdingsService } from '../services/holdingsService'
 // 使用动态导入echarts，只在需要时加载
 let echarts = null
@@ -101,6 +117,7 @@ export default defineComponent({
     const chartRef = ref(null)
     let chart = null
     const loading = ref(false)
+    const error = ref(false)
     const total = ref(0)
     const currentPage = ref(1)
     const pageSize = ref(10)
@@ -114,9 +131,17 @@ export default defineComponent({
       { label: 'Avalanche', value: 'AVAX' }
     ])
     
+    // 分页数据计算属性
+    const paginatedData = computed(() => {
+      const startIndex = (currentPage.value - 1) * pageSize.value
+      const endIndex = startIndex + pageSize.value
+      return historyData.value.slice(startIndex, endIndex)
+    })
+    
     // 获取历史持仓
     const fetchHistory = async () => {
       loading.value = true
+      error.value = false
       try {
         // 准备查询参数
         const params = {}
@@ -136,14 +161,21 @@ export default defineComponent({
         if (!chart && historyData.value.length > 0 && chartRef.value) {
           const isVisible = chartRef.value.getBoundingClientRect().top < window.innerHeight + 100
           if (isVisible) {
-            initChart(data)
+            await initChart(data)
           }
         }
-      } catch (error) {
-        console.error('获取历史持仓失败:', error)
+      } catch (err) {
+        console.error('获取历史持仓失败:', err)
+        error.value = true
+        historyData.value = []
+        total.value = 0
       } finally {
         loading.value = false
       }
+    }
+    
+    const reloadData = () => {
+      fetchHistory()
     }
     
     // 防抖函数
@@ -155,13 +187,17 @@ export default defineComponent({
       }
     }
     
-    // 初始化图表（使用懒加载）
-    const initChart = (data) => {
+    // 初始化图表（使用懒加载和异步导入）
+    const initChart = async (data) => {
       if (chartRef.value && !chart) {
         // 检查图表是否在视口中
         const isVisible = chartRef.value.getBoundingClientRect().top < window.innerHeight + 100
         
         if (isVisible) {
+          // 动态加载echarts
+          if (!echarts) {
+            echarts = await import('echarts')
+          }
           chart = echarts.init(chartRef.value)
           
           // 按时间分组数据（优化数据处理）
@@ -186,10 +222,32 @@ export default defineComponent({
           
           const option = {
             tooltip: {
-              trigger: 'axis'
+              trigger: 'axis',
+              backgroundColor: 'rgba(255, 255, 255, 0.95)',
+              borderColor: '#e5e7eb',
+              borderWidth: 1,
+              padding: 12,
+              textStyle: {
+                color: '#111827'
+              },
+              shadowBlur: 10,
+              shadowColor: 'rgba(0, 0, 0, 0.1)',
+              formatter: function(params) {
+                let result = params[0].name + '<br/>'
+                params.forEach(param => {
+                  result += '<div style="display:flex;align-items:center;margin-top:5px;"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:8px;background-color:' + param.color + '"></span><span>' + param.seriesName + ': $' + param.value.toLocaleString() + '</span></div>'
+                })
+                return result
+              }
             },
             legend: {
-              data: ['BTC', 'ETH', 'SOL', 'AVAX']
+              data: ['BTC', 'ETH', 'SOL', 'AVAX'],
+              textStyle: {
+                color: '#6b7280'
+              },
+              itemWidth: 10,
+              itemHeight: 10,
+              itemGap: 15
             },
             grid: {
               left: '3%',
@@ -200,18 +258,85 @@ export default defineComponent({
             xAxis: {
               type: 'category',
               boundaryGap: false,
-              data: sortedDates
+              data: sortedDates,
+              axisLine: {
+                lineStyle: {
+                  color: '#e5e7eb'
+                }
+              },
+              axisTick: {
+                show: false
+              },
+              axisLabel: {
+                color: '#6b7280',
+                fontSize: 12
+              }
             },
             yAxis: {
               type: 'value',
+              axisLine: {
+                show: false
+              },
+              axisTick: {
+                show: false
+              },
               axisLabel: {
-                formatter: '${value}'
+                color: '#6b7280',
+                fontSize: 12,
+                formatter: '${value.toLocaleString()}'
+              },
+              splitLine: {
+                lineStyle: {
+                  color: '#f3f4f6'
+                }
               }
             },
-            series: series
+            series: series.map(coin => ({
+              ...coin,
+              symbol: 'circle',
+              symbolSize: 8,
+              emphasis: {
+                symbolSize: 12,
+                itemStyle: {
+                  shadowBlur: 10,
+                  shadowOffsetX: 0,
+                  shadowColor: 'rgba(0, 0, 0, 0.3)'
+                }
+              },
+              itemStyle: {
+                color: coin.name === 'BTC' ? '#f7931a' : 
+                      coin.name === 'ETH' ? '#627eea' :
+                      coin.name === 'SOL' ? '#000000' : '#e84142'
+              },
+              lineStyle: {
+                width: 3
+              },
+              areaStyle: {
+                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                  { offset: 0, color: coin.name === 'BTC' ? 'rgba(247, 147, 26, 0.3)' :
+                               coin.name === 'ETH' ? 'rgba(98, 126, 234, 0.3)' :
+                               coin.name === 'SOL' ? 'rgba(0, 0, 0, 0.3)' : 'rgba(232, 65, 66, 0.3)' },
+                  { offset: 1, color: coin.name === 'BTC' ? 'rgba(247, 147, 26, 0.05)' :
+                               coin.name === 'ETH' ? 'rgba(98, 126, 234, 0.05)' :
+                               coin.name === 'SOL' ? 'rgba(0, 0, 0, 0.05)' : 'rgba(232, 65, 66, 0.05)' }
+                ])
+              }
+            }))
           }
           
           chart.setOption(option)
+          
+          // 添加点击事件处理
+          chart.on('click', (params) => {
+            console.log('点击了资产变化趋势:', params)
+            if (window.$message) {
+              window.$message({
+                message: `${params.seriesName} - ${params.name}: $${params.value.toLocaleString()}`,
+                type: 'success',
+                duration: 2000
+              })
+            }
+          })
         }
       }
     }
@@ -248,9 +373,9 @@ export default defineComponent({
     }, 100)
     
     // 滚动事件处理（用于检测图表是否进入视口）
-    const handleScroll = debounce(() => {
+    const handleScroll = debounce(async () => {
       if (!chart && chartRef.value && historyData.value.length > 0) {
-        initChart(historyData.value)
+        await initChart(historyData.value)
       }
     }, 100)
     
@@ -282,6 +407,7 @@ export default defineComponent({
       historyData,
       chartRef,
       loading,
+      error,
       total,
       currentPage,
       pageSize,
@@ -289,6 +415,7 @@ export default defineComponent({
       selectedCoin,
       coinOptions,
       fetchHistory,
+      reloadData,
       formatDate,
       handleDateChange,
       handleCurrentChange,
@@ -307,26 +434,37 @@ export default defineComponent({
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .history-filters {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .history-content {
   display: flex;
   gap: 20px;
   margin-top: 20px;
+  flex-wrap: wrap;
 }
 
 .history-chart {
   flex: 1;
   min-width: 300px;
+  width: 100%;
 }
 
 .chart-card {
   height: 400px;
+  transition: all 0.3s ease;
+}
+
+.chart-card:hover {
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
 #history-chart {
@@ -337,11 +475,70 @@ export default defineComponent({
 .history-table {
   flex: 2;
   min-width: 500px;
+  width: 100%;
+  overflow-x: auto;
 }
 
 .pagination-container {
   margin-top: 20px;
   display: flex;
   justify-content: center;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .history-content {
+    flex-direction: column;
+  }
+  
+  .history-table {
+    min-width: auto;
+  }
+  
+  .chart-card {
+    height: 300px;
+  }
+  
+  #history-chart {
+    height: 230px;
+  }
+  
+  .history-filters {
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+  }
+  
+  .history-filters .el-select {
+    width: 100% !important;
+    margin-left: 0 !important;
+  }
+  
+  .el-table {
+    font-size: 12px;
+  }
+  
+  .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 576px) {
+  .chart-card {
+    height: 250px;
+  }
+  
+  #history-chart {
+    height: 180px;
+  }
+  
+  .pagination-container {
+    padding: 0 10px;
+  }
+  
+  .el-pagination {
+    font-size: 12px;
+  }
 }
 </style>

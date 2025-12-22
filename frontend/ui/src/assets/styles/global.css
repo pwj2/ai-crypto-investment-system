@@ -1,18 +1,56 @@
 /* 全局样式 */
 :root {
-  --primary-color: #409EFF;
-  --success-color: #67C23A;
-  --warning-color: #E6A23C;
-  --danger-color: #F56C6C;
-  --info-color: #909399;
-  --primary-text-color: #2c3e50;
-  --secondary-text-color: #666;
-  --border-color: #e4e7ed;
-  --background-color: #f5f7fa;
+  /* 主色调系统 */
+  --primary-color: #3b82f6;
+  --primary-light: #60a5fa;
+  --primary-dark: #2563eb;
+  --accent-color: #8b5cf6;
+  
+  /* 状态颜色 */
+  --success-color: #10b981;
+  --warning-color: #f59e0b;
+  --danger-color: #ef4444;
+  --info-color: #6b7280;
+  
+  /* 文本颜色 */
+  --text-primary: #111827;
+  --text-secondary: #374151;
+  --text-tertiary: #6b7280;
+  
+  /* 背景颜色 */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f9fafb;
+  --bg-tertiary: #f3f4f6;
   --card-background: #ffffff;
-  --shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-  --border-radius: 4px;
-  --transition: all 0.3s ease;
+  
+  /* 边框颜色 */
+  --border-light: #e5e7eb;
+  --border-medium: #d1d5db;
+  --border-dark: #9ca3af;
+  
+  /* 阴影效果 */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
+  
+  /* 间距系统 */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-xxl: 48px;
+  
+  /* 圆角 */
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  --border-radius-full: 9999px;
+  
+  /* 过渡效果 */
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-fast: all 0.15s ease;
 }
 
 /* 基础重置 */
@@ -26,8 +64,8 @@ body {
   font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
   font-size: 14px;
   line-height: 1.5;
-  color: var(--primary-text-color);
-  background-color: var(--background-color);
+  color: var(--text-primary);
+  background-color: var(--bg-secondary);
 }
 
 /* 通用容器 */
@@ -41,21 +79,39 @@ body {
 /* 卡片样式 */
 .card {
   background-color: var(--card-background);
-  border-radius: var(--border-radius);
-  box-shadow: var(--shadow);
-  padding: 20px;
-  margin-bottom: 20px;
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-md);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
   transition: var(--transition);
+  border: 1px solid var(--border-light);
 }
 
 .card:hover {
-  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+/* 渐变卡片 */
+.gradient-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.gradient-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
 }
 
 /* 标题样式 */
 h1, h2, h3, h4, h5, h6 {
-  color: var(--primary-text-color);
-  margin-bottom: 16px;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-md);
   font-weight: 600;
 }
 
@@ -78,8 +134,8 @@ h4 {
 /* 按钮样式 */
 .btn {
   display: inline-block;
-  padding: 8px 16px;
-  border-radius: var(--border-radius);
+  padding: 10px 20px;
+  border-radius: var(--border-radius-md);
   font-size: 14px;
   font-weight: 500;
   text-align: center;
@@ -87,6 +143,8 @@ h4 {
   transition: var(--transition);
   border: none;
   outline: none;
+  min-height: 44px;
+  min-width: 44px;
 }
 
 .btn-primary {
@@ -95,7 +153,9 @@ h4 {
 }
 
 .btn-primary:hover {
-  background-color: #66b1ff;
+  background-color: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
 .btn-success {
@@ -104,7 +164,9 @@ h4 {
 }
 
 .btn-success:hover {
-  background-color: #85ce61;
+  background-color: #059669;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
 .btn-warning {
@@ -113,7 +175,9 @@ h4 {
 }
 
 .btn-warning:hover {
-  background-color: #ebb563;
+  background-color: #d97706;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
 }
 
 .btn-danger {
@@ -122,7 +186,25 @@ h4 {
 }
 
 .btn-danger:hover {
-  background-color: #f78989;
+  background-color: #dc2626;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.btn-accent {
+  background-color: var(--accent-color);
+  color: white;
+}
+
+.btn-accent:hover {
+  background-color: #7c3aed;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+.btn:active {
+  transform: translateY(0);
+  transition: var(--transition-fast);
 }
 
 /* 表单样式 */
@@ -247,6 +329,97 @@ h4 {
 
 .align-items-center {
   align-items: center;
+}
+
+/* 动画效果 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes bounceIn {
+  0%, 20%, 40%, 60%, 80%, 100% {
+    transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+  }
+  0% {
+    opacity: 0;
+    transform: scale3d(.3, .3, .3);
+  }
+  20% {
+    transform: scale3d(1.1, 1.1, 1.1);
+  }
+  40% {
+    transform: scale3d(.9, .9, .9);
+  }
+  60% {
+    opacity: 1;
+    transform: scale3d(1.03, 1.03, 1.03);
+  }
+  80% {
+    transform: scale3d(.97, .97, .97);
+  }
+  100% {
+    opacity: 1;
+    transform: scale3d(1, 1, 1);
+  }
+}
+
+/* 动画类 */
+.animate-fadeIn {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+.animate-slideInLeft {
+  animation: slideInLeft 0.5s ease-out forwards;
+}
+
+.animate-slideInRight {
+  animation: slideInRight 0.5s ease-out forwards;
+}
+
+.animate-pulse {
+  animation: pulse 2s infinite;
+}
+
+.animate-bounceIn {
+  animation: bounceIn 0.6s ease-out forwards;
 }
 
 /* 响应式设计 */
