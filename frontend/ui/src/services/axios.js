@@ -1,3 +1,4 @@
+// API配置文件 - 独立版本
 import axios from 'axios'
 
 const axiosInstance = axios.create({
