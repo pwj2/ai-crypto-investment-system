@@ -9,11 +9,11 @@ export default defineConfig({
       '/api': {
         target: 'http://localhost:8081',
         changeOrigin: true,
-        rewrite: (path) => path
-      }
+        rewrite: path => path,
+      },
     },
     // 启用gzip压缩
-    compress: true
+    compress: true,
   },
   build: {
     outDir: 'dist',
@@ -26,18 +26,18 @@ export default defineConfig({
           'vue-vendor': ['vue', 'vue-router', 'pinia'],
           'element-plus': ['element-plus'],
           // 将echarts等大型库单独打包，减少主包体积
-          'chart-libs': ['echarts']
-        }
-      }
+          'chart-libs': ['echarts'],
+        },
+      },
     },
     // 启用gzip压缩
     compress: true,
     // 关闭CSS代码分割，减少HTTP请求
-    cssCodeSplit: false
+    cssCodeSplit: false,
   },
   // 优化依赖预构建
   optimizeDeps: {
     include: ['vue', 'vue-router', 'pinia', 'element-plus', 'echarts'],
-    exclude: ['node_modules']
-  }
+    exclude: ['node_modules'],
+  },
 })

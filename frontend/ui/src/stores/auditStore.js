@@ -6,9 +6,9 @@ export const useAuditStore = defineStore('audits', {
     audits: [],
     loading: false,
     error: null,
-    total: 0
+    total: 0,
   }),
-  
+
   actions: {
     async fetchAudits(page = 1, pageSize = 10) {
       this.loading = true
@@ -24,12 +24,15 @@ export const useAuditStore = defineStore('audits', {
         this.loading = false
       }
     },
-    
+
     async fetchAuditsByDateRange(startDate, endDate) {
       this.loading = true
       this.error = null
       try {
-        const response = await auditService.getAuditsByDateRange(startDate, endDate)
+        const response = await auditService.getAuditsByDateRange(
+          startDate,
+          endDate
+        )
         this.audits = response.data
       } catch (error) {
         this.error = error.message
@@ -37,6 +40,6 @@ export const useAuditStore = defineStore('audits', {
       } finally {
         this.loading = false
       }
-    }
-  }
+    },
+  },
 })

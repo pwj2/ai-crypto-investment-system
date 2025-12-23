@@ -3,7 +3,7 @@
     <div class="login-card">
       <h2 class="login-title">AI 加密货币投资系统</h2>
       <p class="login-subtitle">请登录您的账户</p>
-      
+
       <el-form :model="loginForm" label-position="left" label-width="0">
         <el-form-item>
           <el-input
@@ -13,7 +13,7 @@
             class="login-input"
           />
         </el-form-item>
-        
+
         <el-form-item>
           <el-input
             v-model="loginForm.password"
@@ -23,12 +23,14 @@
             class="login-input"
           />
         </el-form-item>
-        
+
         <div class="login-options">
-          <el-checkbox v-model="loginForm.rememberMe" class="remember-me">记住我</el-checkbox>
+          <el-checkbox v-model="loginForm.rememberMe" class="remember-me"
+            >记住我</el-checkbox
+          >
           <el-link type="primary" class="forgot-password">忘记密码</el-link>
         </div>
-        
+
         <el-form-item>
           <el-button
             type="primary"
@@ -40,7 +42,7 @@
             登录
           </el-button>
         </el-form-item>
-        
+
         <el-form-item>
           <el-button
             block
@@ -65,27 +67,27 @@ export default defineComponent({
     const loginForm = ref({
       username: 'admin',
       password: '',
-      rememberMe: true
+      rememberMe: true,
     })
-    
+
     const handleLogin = () => {
       // 这里可以添加登录逻辑
       console.log('登录按钮点击', loginForm.value)
       // 模拟登录成功，跳转到首页
       window.location.href = '/dashboard'
     }
-    
+
     const handleRegister = () => {
       // 这里可以添加注册逻辑
       console.log('注册按钮点击')
     }
-    
+
     return {
       loginForm,
       handleLogin,
-      handleRegister
+      handleRegister,
     }
-  }
+  },
 })
 </script>
 

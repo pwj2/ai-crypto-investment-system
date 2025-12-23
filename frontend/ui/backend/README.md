@@ -32,8 +32,8 @@ module.exports = {
   user: 'root', // 您的MySQL用户名
   password: 'password', // 您的MySQL密码
   database: 'ai_crypto_db', // 数据库名称
-  port: 3306
-};
+  port: 3306,
+}
 ```
 
 ## 启动服务

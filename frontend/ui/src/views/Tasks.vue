@@ -6,47 +6,61 @@
           <h2>系统任务管理</h2>
         </div>
       </template>
-      
+
       <div class="tasks-content">
         <div class="tasks-filters">
-          <el-select v-model="statusFilter" placeholder="选择任务状态" style="width: 150px;">
+          <el-select
+            v-model="statusFilter"
+            placeholder="选择任务状态"
+            style="width: 150px"
+          >
             <el-option label="全部" value=""></el-option>
             <el-option label="运行中" value="running"></el-option>
             <el-option label="已完成" value="completed"></el-option>
             <el-option label="失败" value="failed"></el-option>
             <el-option label="待执行" value="pending"></el-option>
           </el-select>
-          <el-select v-model="typeFilter" placeholder="选择任务类型" style="width: 150px; margin-left: 10px;">
+          <el-select
+            v-model="typeFilter"
+            placeholder="选择任务类型"
+            style="width: 150px; margin-left: 10px"
+          >
             <el-option label="全部" value=""></el-option>
             <el-option label="数据采集" value="data_collection"></el-option>
             <el-option label="数据分析" value="data_analysis"></el-option>
             <el-option label="报告生成" value="report_generation"></el-option>
           </el-select>
         </div>
-        
+
         <div class="tasks-table">
           <el-table
             :data="filteredTasks"
             style="width: 100%"
             stripe
             border
+            height="500px"
+            virtual-scroll-y
           >
-            <el-table-column prop="id" label="任务ID" width="100"></el-table-column>
-            <el-table-column prop="taskName" label="任务名称" width="180"></el-table-column>
+            <el-table-column
+              prop="id"
+              label="任务ID"
+              width="100"
+            ></el-table-column>
+            <el-table-column
+              prop="taskName"
+              label="任务名称"
+              width="180"
+            ></el-table-column>
             <el-table-column prop="taskType" label="任务类型" width="150">
               <template #default="scope">
-                <el-tag
-                  :type="getTaskTypeColor(scope.row.taskType)"
-                >
+                <el-tag :type="getTaskTypeColor(scope.row.taskType)">
                   {{ getTaskTypeLabel(scope.row.taskType) }}
                 </el-tag>
               </template>
             </el-table-column>
             <el-table-column prop="status" label="任务状态" width="120">
               <template #default="scope">
-                <el-tag
-                  :type="getStatusColor(scope.row.status)"
-                >
+                <el-tag :type="getStatusColor(scope.row.status)">
                   {{ getStatusLabel(scope.row.status) }}
                 </el-tag>
               </template>
@@ -55,14 +69,22 @@
               <template #default="scope">
                 <el-progress
                   :percentage="scope.row.progress"
-                  :status="scope.row.status === 'completed' ? 'success' : scope.row.status === 'failed' ? 'exception' : ''"
+                  :status="
+                    scope.row.status === 'completed'
+                      ? 'success'
+                      : scope.row.status === 'failed'
+                        ? 'exception'
+                        : ''
+                  "
                   :stroke-width="10"
                 ></el-progress>
               </template>
             </el-table-column>
             <el-table-column prop="startTime" label="开始时间" width="200">
               <template #default="scope">
-                {{ scope.row.startTime ? formatDate(scope.row.startTime) : '-' }}
+                {{
+                  scope.row.startTime ? formatDate(scope.row.startTime) : '-'
+                }}
               </template>
             </el-table-column>
             <el-table-column prop="endTime" label="结束时间" width="200">
@@ -85,7 +107,10 @@
                   查看详情
                 </el-button>
                 <el-button
-                  v-if="scope.row.status === 'failed' || scope.row.status === 'completed'"
+                  v-if="
+                    scope.row.status === 'failed' ||
+                    scope.row.status === 'completed'
+                  "
                   type="warning"
                   size="small"
                   @click="restartTask(scope.row.id)"
@@ -98,23 +123,33 @@
         </div>
       </div>
     </el-card>
-    
+
     <!-- 任务详情对话框 -->
-    <el-dialog
-      v-model="showTaskDialog"
-      title="任务详情"
-      width="70%"
-    >
+    <el-dialog v-model="showTaskDialog" title="任务详情" width="70%">
       <div v-if="currentTask" class="task-detail">
         <el-descriptions :column="2" border>
-          <el-descriptions-item label="任务ID">{{ currentTask.id }}</el-descriptions-item>
-          <el-descriptions-item label="任务名称">{{ currentTask.taskName }}</el-descriptions-item>
-          <el-descriptions-item label="任务类型">{{ getTaskTypeLabel(currentTask.taskType) }}</el-descriptions-item>
-          <el-descriptions-item label="任务状态">{{ getStatusLabel(currentTask.status) }}</el-descriptions-item>
-          <el-descriptions-item label="进度">{{ currentTask.progress }}%</el-descriptions-item>
-          <el-descriptions-item label="执行时长">{{ currentTask.duration ? currentTask.duration + '秒' : '-' }}</el-descriptions-item>
+          <el-descriptions-item label="任务ID">{{
+            currentTask.id
+          }}</el-descriptions-item>
+          <el-descriptions-item label="任务名称">{{
+            currentTask.taskName
+          }}</el-descriptions-item>
+          <el-descriptions-item label="任务类型">{{
+            getTaskTypeLabel(currentTask.taskType)
+          }}</el-descriptions-item>
+          <el-descriptions-item label="任务状态">{{
+            getStatusLabel(currentTask.status)
+          }}</el-descriptions-item>
+          <el-descriptions-item label="进度"
+            >{{ currentTask.progress }}%</el-descriptions-item
+          >
+          <el-descriptions-item label="执行时长">{{
+            currentTask.duration ? currentTask.duration + '秒' : '-'
+          }}</el-descriptions-item>
           <el-descriptions-item label="开始时间" :span="2">
-            {{ currentTask.startTime ? formatDate(currentTask.startTime) : '-' }}
+            {{
+              currentTask.startTime ? formatDate(currentTask.startTime) : '-'
+            }}
           </el-descriptions-item>
           <el-descriptions-item label="结束时间" :span="2">
             {{ currentTask.endTime ? formatDate(currentTask.endTime) : '-' }}
@@ -126,7 +161,9 @@
             <pre>{{ JSON.stringify(currentTask.result, null, 2) }}</pre>
           </el-descriptions-item>
           <el-descriptions-item label="错误信息" :span="2">
-            <pre v-if="currentTask.errorMessage">{{ currentTask.errorMessage }}</pre>
+            <pre v-if="currentTask.errorMessage">{{
+              currentTask.errorMessage
+            }}</pre>
             <span v-else>无</span>
           </el-descriptions-item>
         </el-descriptions>
@@ -147,7 +184,7 @@ export default defineComponent({
     const typeFilter = ref('')
     const showTaskDialog = ref(false)
     const currentTask = ref(null)
-    
+
     // 模拟任务数据
     tasks.value = [
       {
@@ -161,7 +198,7 @@ export default defineComponent({
         duration: null,
         parameters: { source: 'twitter', keywords: ['BTC', 'ETH'], limit: 100 },
         result: null,
-        errorMessage: null
+        errorMessage: null,
       },
       {
         id: 2,
@@ -174,7 +211,7 @@ export default defineComponent({
         duration: 1800,
         parameters: { analysisType: 'sentiment', dataRange: '7d' },
         result: { positive: 85, neutral: 45, negative: 20 },
-        errorMessage: null
+        errorMessage: null,
       },
       {
         id: 3,
@@ -187,7 +224,7 @@ export default defineComponent({
         duration: 300,
         parameters: { reportType: 'daily', date: '2025-12-16' },
         result: null,
-        errorMessage: '数据库连接失败'
+        errorMessage: '数据库连接失败',
       },
       {
         id: 4,
@@ -200,19 +237,23 @@ export default defineComponent({
         duration: null,
         parameters: { source: 'reddit', keywords: ['SOL', 'AVAX'], limit: 50 },
         result: null,
-        errorMessage: null
-      }
+        errorMessage: null,
+      },
     ]
-    
+
     // 筛选后的任务列表
     const filteredTasks = computed(() => {
       return tasks.value.filter(task => {
-        const statusMatch = statusFilter.value ? task.status === statusFilter.value : true
-        const typeMatch = typeFilter.value ? task.taskType === typeFilter.value : true
+        const statusMatch = statusFilter.value
+          ? task.status === statusFilter.value
+          : true
+        const typeMatch = typeFilter.value
+          ? task.taskType === typeFilter.value
+          : true
         return statusMatch && typeMatch
       })
     })
-    
+
     // 获取任务列表
     const fetchTasks = async () => {
       try {
@@ -222,71 +263,71 @@ export default defineComponent({
         console.error('获取任务列表失败:', error)
       }
     }
-    
+
     // 格式化日期
-    const formatDate = (dateString) => {
+    const formatDate = dateString => {
       const date = new Date(dateString)
       return date.toLocaleString()
     }
-    
+
     // 获取任务类型标签
-    const getTaskTypeLabel = (type) => {
+    const getTaskTypeLabel = type => {
       const labels = {
         data_collection: '数据采集',
         data_analysis: '数据分析',
-        report_generation: '报告生成'
+        report_generation: '报告生成',
       }
       return labels[type] || type
     }
-    
+
     // 获取任务类型颜色
-    const getTaskTypeColor = (type) => {
+    const getTaskTypeColor = type => {
       const colors = {
         data_collection: 'primary',
         data_analysis: 'success',
-        report_generation: 'warning'
+        report_generation: 'warning',
       }
       return colors[type] || 'info'
     }
-    
+
     // 获取状态标签
-    const getStatusLabel = (status) => {
+    const getStatusLabel = status => {
       const labels = {
         running: '运行中',
         completed: '已完成',
         failed: '失败',
-        pending: '待执行'
+        pending: '待执行',
       }
       return labels[status] || status
     }
-    
+
     // 获取状态颜色
-    const getStatusColor = (status) => {
+    const getStatusColor = status => {
       const colors = {
         running: 'primary',
         completed: 'success',
         failed: 'danger',
-        pending: 'info'
+        pending: 'info',
       }
       return colors[status] || 'info'
     }
-    
+
     // 查看任务详情
-    const viewTaskDetails = (task) => {
+    const viewTaskDetails = task => {
       currentTask.value = task
       showTaskDialog.value = true
     }
-    
+
     // 重新执行任务
-    const restartTask = (taskId) => {
+    const restartTask = taskId => {
       console.log('重新执行任务:', taskId)
       ElMessage.success('任务已重新执行')
     }
-    
+
     onMounted(() => {
       fetchTasks()
     })
-    
+
     return {
       tasks,
       statusFilter,
@@ -301,9 +342,9 @@ export default defineComponent({
       getStatusLabel,
       getStatusColor,
       viewTaskDetails,
-      restartTask
+      restartTask,
     }
-  }
+  },
 })
 </script>
 

@@ -5,9 +5,9 @@ export const useTaskStore = defineStore('tasks', {
   state: () => ({
     tasks: [],
     loading: false,
-    error: null
+    error: null,
   }),
-  
+
   actions: {
     async fetchTasks() {
       this.loading = true
@@ -22,7 +22,7 @@ export const useTaskStore = defineStore('tasks', {
         this.loading = false
       }
     },
-    
+
     async restartTask(taskId) {
       this.loading = true
       this.error = null
@@ -41,6 +41,6 @@ export const useTaskStore = defineStore('tasks', {
       } finally {
         this.loading = false
       }
-    }
-  }
+    },
+  },
 })

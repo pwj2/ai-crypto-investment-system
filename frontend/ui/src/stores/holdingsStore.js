@@ -6,9 +6,9 @@ export const useHoldingsStore = defineStore('holdings', {
     holdings: [],
     totalHoldings: 0,
     loading: false,
-    error: null
+    error: null,
   }),
-  
+
   actions: {
     async fetchHoldings() {
       this.loading = true
@@ -24,7 +24,7 @@ export const useHoldingsStore = defineStore('holdings', {
         this.loading = false
       }
     },
-    
+
     async updateHoldings(holdings) {
       this.loading = true
       this.error = null
@@ -41,11 +41,11 @@ export const useHoldingsStore = defineStore('holdings', {
         this.loading = false
       }
     },
-    
+
     calculateTotalHoldings() {
       this.totalHoldings = this.holdings.reduce((total, holding) => {
-        return total + (holding.price * holding.quantity)
+        return total + holding.price * holding.quantity
       }, 0)
-    }
-  }
+    },
+  },
 })

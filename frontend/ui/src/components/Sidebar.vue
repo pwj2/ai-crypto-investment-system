@@ -20,7 +20,7 @@
         <span>当前持仓</span>
       </el-menu-item>
       <el-menu-item index="/history">
-        <el-icon><View /></el-icon>
+        <el-icon><ViewIcon /></el-icon>
         <span>持仓历史</span>
       </el-menu-item>
       <el-menu-item index="/suggest-reports">
@@ -46,30 +46,38 @@
 <script>
 import { defineComponent, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import { House, Goods, View, Document, ChatDotRound, DataAnalysis, Calendar } from '@element-plus/icons-vue'
+import {
+  House,
+  Goods,
+  View as ViewIcon,
+  Document,
+  ChatDotRound,
+  DataAnalysis,
+  Calendar,
+} from '@element-plus/icons-vue'
 
 export default defineComponent({
   name: 'Sidebar',
   components: {
     House,
     Goods,
-    View,
+    ViewIcon,
     Document,
     ChatDotRound,
     DataAnalysis,
-    Calendar
+    Calendar,
   },
   setup() {
     const route = useRoute()
-    
+
     const activePath = computed(() => {
       return route.path
     })
-    
+
     return {
-      activePath
+      activePath,
     }
-  }
+  },
 })
 </script>
 
@@ -107,6 +115,6 @@ export default defineComponent({
 }
 
 .el-menu-item.is-active {
-  background-color: #409EFF !important;
+  background-color: #409eff !important;
 }
 </style>

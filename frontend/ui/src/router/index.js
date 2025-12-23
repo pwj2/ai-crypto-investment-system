@@ -3,53 +3,53 @@ import { createRouter, createWebHistory } from 'vue-router'
 const routes = [
   {
     path: '/',
-    redirect: '/login'
+    redirect: '/login',
   },
   {
     path: '/login',
     name: 'Login',
-    component: () => import('../views/Login.vue')
+    component: () => import('../views/Login.vue'),
   },
   {
     path: '/dashboard',
     name: 'Dashboard',
-    component: () => import('../views/Dashboard.vue')
+    component: () => import('../views/Dashboard.vue'),
   },
   {
     path: '/holdings',
     name: 'Holdings',
-    component: () => import('../views/Holdings.vue')
+    component: () => import('../views/Holdings.vue'),
   },
   {
     path: '/history',
     name: 'History',
-    component: () => import('../views/History.vue')
+    component: () => import('../views/History.vue'),
   },
   {
     path: '/suggest-reports',
     name: 'SuggestReports',
-    component: () => import('../views/SuggestReports.vue')
+    component: () => import('../views/SuggestReports.vue'),
   },
   {
     path: '/message-analytics',
     name: 'MessageAnalytics',
-    component: () => import('../views/MessageAnalytics.vue')
+    component: () => import('../views/MessageAnalytics.vue'),
   },
   {
     path: '/audits',
     name: 'Audits',
-    component: () => import('../views/Audits.vue')
+    component: () => import('../views/Audits.vue'),
   },
   {
     path: '/tasks',
     name: 'Tasks',
-    component: () => import('../views/Tasks.vue')
-  }
+    component: () => import('../views/Tasks.vue'),
+  },
 ]
 
 const router = createRouter({
   history: createWebHistory(),
-  routes
+  routes,
 })
 
 export default router

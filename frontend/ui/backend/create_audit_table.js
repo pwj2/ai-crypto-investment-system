@@ -1,5 +1,5 @@
 // 创建审计记录表脚本
-const pool = require('./config/db');
+const pool = require('./config/db')
 
 async function createAuditTable() {
   try {
@@ -15,10 +15,10 @@ async function createAuditTable() {
         ip_address VARCHAR(50) DEFAULT NULL,
         create_time DATETIME DEFAULT CURRENT_TIMESTAMP
       )
-    `);
-    
-    console.log('审计记录表创建成功');
-    
+    `)
+
+    console.log('审计记录表创建成功')
+
     // 插入一些测试数据
     await pool.execute(`
       INSERT INTO audit_records (operation_type, operation_user, operation_time, operation_content, operation_result, ip_address) VALUES
@@ -32,14 +32,14 @@ async function createAuditTable() {
       ('QUERY', 'user456', '2024-01-11 13:20:00', '查询了市场数据', 'success', '192.168.1.102'),
       ('DELETE', 'user789', '2024-01-11 15:10:00', '删除了旧的交易记录', 'success', '192.168.1.103'),
       ('APPROVE', 'admin', '2024-01-11 17:30:00', '批准了新的投资策略', 'success', '192.168.1.100')
-    `);
-    
-    console.log('测试数据插入成功');
+    `)
+
+    console.log('测试数据插入成功')
   } catch (error) {
-    console.error('创建审计记录表失败:', error);
+    console.error('创建审计记录表失败:', error)
   } finally {
-    pool.end();
+    pool.end()
   }
 }
 
-createAuditTable();
+createAuditTable()

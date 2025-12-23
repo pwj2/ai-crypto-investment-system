@@ -4,10 +4,12 @@
       <template #header>
         <div class="card-header">
           <h2>当前持仓</h2>
-          <el-button type="primary" @click="openUpdateDialog">更新持仓</el-button>
+          <el-button type="primary" @click="openUpdateDialog"
+            >更新持仓</el-button
+          >
         </div>
       </template>
-      
+
       <div class="holdings-content">
         <div class="holdings-chart">
           <el-card shadow="hover" class="chart-card">
@@ -19,13 +21,15 @@
             <div id="holdings-chart" ref="chartRef"></div>
           </el-card>
         </div>
-        
+
         <div class="holdings-table">
           <el-table
             :data="holdings"
             style="width: 100%"
             stripe
             border
+            height="500px"
+            virtual-scroll-y
           >
             <el-table-column prop="id" label="ID" width="80"></el-table-column>
             <el-table-column label="货币名称" width="120">
@@ -33,7 +37,11 @@
                 {{ coinNameMap[scope.row.coinName] || scope.row.coinName }}
               </template>
             </el-table-column>
-            <el-table-column prop="coinType" label="货币类型" width="100"></el-table-column>
+            <el-table-column
+              prop="coinType"
+              label="货币类型"
+              width="100"
+            ></el-table-column>
             <el-table-column prop="quantity" label="数量" width="120">
               <template #default="scope">
                 {{ scope.row.quantity.toFixed(4) }}
@@ -41,12 +49,20 @@
             </el-table-column>
             <el-table-column prop="price" label="价格" width="150">
               <template #default="scope">
-                ${{ scope.row.price.toLocaleString('en-US', { minimumFractionDigits: 2 }) }}
+                ${{
+                  scope.row.price.toLocaleString('en-US', {
+                    minimumFractionDigits: 2,
+                  })
+                }}
               </template>
             </el-table-column>
             <el-table-column prop="totalValue" label="总价值" width="180">
               <template #default="scope">
-                ${{ scope.row.totalValue.toLocaleString('en-US', { minimumFractionDigits: 2 }) }}
+                ${{
+                  scope.row.totalValue.toLocaleString('en-US', {
+                    minimumFractionDigits: 2,
+                  })
+                }}
               </template>
             </el-table-column>
             <el-table-column prop="proportion" label="占比" width="100">
@@ -63,7 +79,7 @@
         </div>
       </div>
     </el-card>
-    
+
     <!-- 更新持仓对话框 -->
     <el-dialog
       v-model="showUpdateDialog"
@@ -72,14 +88,14 @@
       :before-close="handleClose"
     >
       <el-form :model="updateForm" label-width="80px">
-        <el-table
-          :data="updateForm.holdings"
-          style="width: 100%"
-          border
-        >
+        <el-table :data="updateForm.holdings" style="width: 100%" border>
           <el-table-column prop="coinName" label="货币名称" width="180">
             <template #default="scope">
-              <el-select v-model="scope.row.coinName" placeholder="请选择货币名称" @change="updateCoinType(scope.row)">
+              <el-select
+                v-model="scope.row.coinName"
+                placeholder="请选择货币名称"
+                @change="updateCoinType(scope.row)"
+              >
                 <el-option
                   v-for="currency in cryptoCurrencies"
                   :key="currency.value"
@@ -91,7 +107,11 @@
           </el-table-column>
           <el-table-column prop="coinType" label="货币类型" width="120">
             <template #default="scope">
-              <el-input v-model="scope.row.coinType" placeholder="请输入货币类型" readonly></el-input>
+              <el-input
+                v-model="scope.row.coinType"
+                placeholder="请输入货币类型"
+                readonly
+              ></el-input>
             </template>
           </el-table-column>
           <el-table-column prop="quantity" label="数量" width="120">
@@ -116,18 +136,22 @@
           </el-table-column>
           <el-table-column label="操作" width="100">
             <template #default="scope">
-              <el-button type="danger" size="small" @click="removeHolding(scope.$index)">
+              <el-button
+                type="danger"
+                size="small"
+                @click="removeHolding(scope.$index)"
+              >
                 删除
               </el-button>
             </template>
           </el-table-column>
         </el-table>
-        
+
         <div class="dialog-footer">
           <el-button type="primary" @click="addHolding">添加资产</el-button>
         </div>
       </el-form>
-      
+
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="showUpdateDialog = false">取消</el-button>
@@ -153,7 +177,7 @@ export default defineComponent({
     let chart = null
     const showUpdateDialog = ref(false)
     const updateForm = ref({ holdings: [] })
-    
+
     // 常用加密货币列表
     const cryptoCurrencies = [
       { value: 'BTC', label: '比特币 (BTC)' },
@@ -165,74 +189,78 @@ export default defineComponent({
       { value: 'XRP', label: '瑞波币 (XRP)' },
       { value: 'DOT', label: '波卡 (DOT)' },
       { value: 'DOGE', label: '狗狗币 (DOGE)' },
-      { value: 'AVAX', label: 'Avalanche (AVAX)' }
+      { value: 'AVAX', label: 'Avalanche (AVAX)' },
     ]
-    
+
     // 货币名称映射表
     const coinNameMap = {
-      'BTC': '比特币',
-      'ETH': '以太坊',
-      'SOL': 'Solana',
-      'USDT': 'Tether',
-      'BNB': '币安币',
-      'ADA': '卡尔达诺',
-      'XRP': '瑞波币',
-      'DOT': '波卡',
-      'DOGE': '狗狗币',
-      'AVAX': 'Avalanche'
+      BTC: '比特币',
+      ETH: '以太坊',
+      SOL: 'Solana',
+      USDT: 'Tether',
+      BNB: '币安币',
+      ADA: '卡尔达诺',
+      XRP: '瑞波币',
+      DOT: '波卡',
+      DOGE: '狗狗币',
+      AVAX: 'Avalanche',
     }
-    
+
     // 获取当前持仓
     const fetchHoldings = async () => {
       try {
         const data = await holdingsService.getCurrentHoldings()
         // 映射后端数据到前端期望的格式
         const formattedData = data.map(item => ({
-      id: item.id,
-      coinName: item.type,
-      coinType: item.type,
-      quantity: item.quantity,
-      price: item.price,
-      totalValue: item.totalValue,
-      proportion: 0, // 计算占比
-      updatedTime: new Date().toISOString() // 模拟更新时间
-    }))
-        
+          id: item.id,
+          coinName: item.type,
+          coinType: item.type,
+          quantity: item.quantity,
+          price: item.price,
+          totalValue: item.totalValue,
+          proportion: 0, // 计算占比
+          updatedTime: new Date().toISOString(), // 模拟更新时间
+        }))
+
         // 计算占比
-        const total = formattedData.reduce((sum, item) => sum + item.totalValue, 0)
+        const total = formattedData.reduce(
+          (sum, item) => sum + item.totalValue,
+          0
+        )
         formattedData.forEach(item => {
-          item.proportion = total > 0 ? ((item.totalValue / total) * 100).toFixed(2) : 0
+          item.proportion =
+            total > 0 ? ((item.totalValue / total) * 100).toFixed(2) : 0
         })
-        
+
         holdings.value = formattedData
         initChart(formattedData)
       } catch (error) {
         console.error('获取持仓失败:', error)
       }
     }
-    
+
     // 初始化图表
-    const initChart = async (data) => {
+    const initChart = async data => {
       if (chartRef.value) {
         // 动态加载echarts
         if (!echarts) {
           echarts = await import('echarts')
         }
         chart = echarts.init(chartRef.value)
-        
+
         const chartData = data.map(item => ({
           name: coinNameMap[item.coinName] || item.coinName,
-          value: item.totalValue
+          value: item.totalValue,
         }))
-        
+
         const option = {
           tooltip: {
             trigger: 'item',
-            formatter: '{b}: ${c} ({d}%)'
+            formatter: '{b}: ${c} ({d}%)',
           },
           legend: {
             orient: 'vertical',
-            left: 'left'
+            left: 'left',
           },
           series: [
             {
@@ -244,23 +272,23 @@ export default defineComponent({
                 itemStyle: {
                   shadowBlur: 10,
                   shadowOffsetX: 0,
-                  shadowColor: 'rgba(0, 0, 0, 0.5)'
-                }
-              }
-            }
-          ]
+                  shadowColor: 'rgba(0, 0, 0, 0.5)',
+                },
+              },
+            },
+          ],
         }
-        
+
         chart.setOption(option)
       }
     }
-    
+
     // 格式化日期
-    const formatDate = (dateString) => {
+    const formatDate = dateString => {
       const date = new Date(dateString)
       return date.toLocaleString()
     }
-    
+
     // 打开更新对话框
     const openUpdateDialog = () => {
       // 只包含当前已有的持仓数据
@@ -268,51 +296,51 @@ export default defineComponent({
         coinName: item.coinName,
         coinType: item.coinType,
         quantity: item.quantity,
-        price: item.price
+        price: item.price,
       }))
       showUpdateDialog.value = true
     }
-    
+
     // 处理对话框关闭
     const handleClose = () => {
       updateForm.value.holdings = []
     }
-    
+
     // 添加资产
     const addHolding = () => {
       updateForm.value.holdings.push({
         coinName: '',
         coinType: '',
         quantity: 0,
-        price: 0
+        price: 0,
       })
     }
-    
+
     // 监听货币名称变化，自动设置货币类型
-    const updateCoinType = (row) => {
+    const updateCoinType = row => {
       if (row.coinName) {
         row.coinType = row.coinName
       } else {
         row.coinType = ''
       }
     }
-    
+
     // 删除资产
-    const removeHolding = (index) => {
+    const removeHolding = index => {
       updateForm.value.holdings.splice(index, 1)
     }
-    
+
     // 提交更新
     const submitUpdate = async () => {
       try {
         // 格式化数据以匹配后端期望的格式
         const formattedHoldings = updateForm.value.holdings.map(holding => ({
-          type: holding.coinType,  // 将coinType改为type
+          type: holding.coinType, // 将coinType改为type
           quantity: holding.quantity,
           price: holding.price,
-          totalValue: holding.quantity * holding.price  // 计算并添加totalValue字段
+          totalValue: holding.quantity * holding.price, // 计算并添加totalValue字段
         }))
-        
+
         await holdingsService.updateHoldings(formattedHoldings)
         showUpdateDialog.value = false
         fetchHoldings()
@@ -322,17 +350,17 @@ export default defineComponent({
         ElMessage.error('更新持仓失败')
       }
     }
-    
+
     onMounted(() => {
       fetchHoldings()
       window.addEventListener('resize', () => chart?.resize())
     })
-    
+
     onUnmounted(() => {
       window.removeEventListener('resize', () => chart?.resize())
       chart?.dispose()
     })
-    
+
     return {
       holdings,
       chartRef,
@@ -347,9 +375,9 @@ export default defineComponent({
       openUpdateDialog,
       cryptoCurrencies,
       updateCoinType,
-      coinNameMap
+      coinNameMap,
     }
-  }
+  },
 })
 </script>
 

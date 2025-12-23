@@ -1,9 +1,9 @@
 /* 全局样式 */
 :root {
-  --primary-color: #409EFF;
-  --success-color: #67C23A;
-  --warning-color: #E6A23C;
-  --danger-color: #F56C6C;
+  --primary-color: #409eff;
+  --success-color: #67c23a;
+  --warning-color: #e6a23c;
+  --danger-color: #f56c6c;
   --info-color: #909399;
   --primary-text-color: #2c3e50;
   --secondary-text-color: #666;
@@ -23,7 +23,9 @@
 }
 
 body {
-  font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
+  font-family:
+    'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB',
+    'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
   font-size: 14px;
   line-height: 1.5;
   color: var(--primary-text-color);
@@ -53,7 +55,12 @@ body {
 }
 
 /* 标题样式 */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   color: var(--primary-text-color);
   margin-bottom: 16px;
   font-weight: 600;
@@ -254,15 +261,15 @@ h4 {
   .dashboard-stats {
     grid-template-columns: 1fr !important;
   }
-  
+
   .dashboard-charts {
     grid-template-columns: 1fr !important;
   }
-  
+
   .sidebar-container {
     display: none;
   }
-  
+
   .header-title h1 {
     font-size: 20px;
   }
@@ -272,7 +279,7 @@ h4 {
   .main-container {
     padding: 10px;
   }
-  
+
   .card {
     padding: 15px;
   }

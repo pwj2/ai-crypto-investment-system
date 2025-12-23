@@ -4,21 +4,37 @@
       <template #header>
         <div class="card-header">
           <h2>建议报告管理</h2>
-          <el-button type="primary" @click="showCreateDialog = true">创建报告</el-button>
+          <el-button type="primary" @click="showCreateDialog = true"
+            >创建报告</el-button
+          >
         </div>
       </template>
-      
+
       <div class="reports-table">
         <el-table
+          v-loading="loading"
           :data="reports"
           style="width: 100%"
           stripe
           border
-          v-loading="loading"
+          height="500px"
+          virtual-scroll-y
         >
-          <el-table-column prop="id" label="报告ID" width="100"></el-table-column>
-          <el-table-column prop="reportName" label="报告名称" width="180"></el-table-column>
-          <el-table-column prop="content" label="报告内容" show-overflow-tooltip>
+          <el-table-column
+            prop="id"
+            label="报告ID"
+            width="100"
+          ></el-table-column>
+          <el-table-column
+            prop="reportName"
+            label="报告名称"
+            width="180"
+          ></el-table-column>
+          <el-table-column
+            prop="content"
+            label="报告内容"
+            show-overflow-tooltip
+          >
             <template #default="scope">
               {{ scope.row.content.substring(0, 100) }}...
             </template>
@@ -26,9 +42,21 @@
           <el-table-column prop="status" label="状态" width="120">
             <template #default="scope">
               <el-tag
-                :type="scope.row.status === 'pending' ? 'warning' : scope.row.status === 'approved' ? 'success' : 'danger'"
+                :type="
+                  scope.row.status === 'pending'
+                    ? 'warning'
+                    : scope.row.status === 'approved'
+                      ? 'success'
+                      : 'danger'
+                "
               >
-                {{ scope.row.status === 'pending' ? '待审核' : scope.row.status === 'approved' ? '已通过' : '已驳回' }}
+                {{
+                  scope.row.status === 'pending'
+                    ? '待审核'
+                    : scope.row.status === 'approved'
+                      ? '已通过'
+                      : '已驳回'
+                }}
               </el-tag>
             </template>
           </el-table-column>
@@ -44,13 +72,30 @@
           </el-table-column>
           <el-table-column label="操作" width="200">
             <template #default="scope">
-              <el-button type="primary" size="small" @click="viewReport(scope.row)">查看</el-button>
-              <el-button type="success" size="small" @click="approveReport(scope.row.id)" v-if="scope.row.status === 'pending'">通过</el-button>
-              <el-button type="danger" size="small" @click="rejectReport(scope.row.id)" v-if="scope.row.status === 'pending'">驳回</el-button>
+              <el-button
+                type="primary"
+                size="small"
+                @click="viewReport(scope.row)"
+                >查看</el-button
+              >
+              <el-button
+                v-if="scope.row.status === 'pending'"
+                type="success"
+                size="small"
+                @click="approveReport(scope.row.id)"
+                >通过</el-button
+              >
+              <el-button
+                v-if="scope.row.status === 'pending'"
+                type="danger"
+                size="small"
+                @click="rejectReport(scope.row.id)"
+                >驳回</el-button
+              >
             </template>
           </el-table-column>
         </el-table>
-        
+
         <div class="pagination-container">
           <el-pagination
             background
@@ -64,21 +109,30 @@
         </div>
       </div>
     </el-card>
-    
+
     <!-- 查看报告对话框 -->
-    <el-dialog
-      v-model="showReportDialog"
-      title="报告详情"
-      width="80%"
-    >
+    <el-dialog v-model="showReportDialog" title="报告详情" width="80%">
       <div v-if="currentReport" class="report-detail">
         <h3>{{ currentReport.reportName }}</h3>
         <div class="report-meta">
-          <div>状态: 
+          <div>
+            状态:
             <el-tag
-              :type="currentReport.status === 'pending' ? 'warning' : currentReport.status === 'approved' ? 'success' : 'danger'"
+              :type="
+                currentReport.status === 'pending'
+                  ? 'warning'
+                  : currentReport.status === 'approved'
+                    ? 'success'
+                    : 'danger'
+              "
             >
-              {{ currentReport.status === 'pending' ? '待审核' : currentReport.status === 'approved' ? '已通过' : '已驳回' }}
+              {{
+                currentReport.status === 'pending'
+                  ? '待审核'
+                  : currentReport.status === 'approved'
+                    ? '已通过'
+                    : '已驳回'
+              }}
             </el-tag>
           </div>
           <div>创建时间: {{ formatDate(currentReport.createdTime) }}</div>
@@ -89,16 +143,15 @@
         </div>
       </div>
     </el-dialog>
-    
+
     <!-- 创建报告对话框 -->
-    <el-dialog
-      v-model="showCreateDialog"
-      title="创建建议报告"
-      width="60%"
-    >
+    <el-dialog v-model="showCreateDialog" title="创建建议报告" width="60%">
       <el-form :model="createForm" label-width="80px">
         <el-form-item label="报告名称">
-          <el-input v-model="createForm.reportName" placeholder="请输入报告名称"></el-input>
+          <el-input
+            v-model="createForm.reportName"
+            placeholder="请输入报告名称"
+          ></el-input>
         </el-form-item>
         <el-form-item label="报告内容">
           <el-input
@@ -109,7 +162,7 @@
           ></el-input>
         </el-form-item>
       </el-form>
-      
+
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="showCreateDialog = false">取消</el-button>
@@ -138,14 +191,17 @@ export default defineComponent({
     const currentReport = ref(null)
     const createForm = ref({
       reportName: '',
-      content: ''
+      content: '',
     })
-    
+
     // 获取建议报告列表
     const fetchReports = async () => {
       loading.value = true
       try {
-        const response = await reportService.getSuggestReports(currentPage.value, pageSize.value)
+        const response = await reportService.getSuggestReports(
+          currentPage.value,
+          pageSize.value
+        )
         // 映射后端返回的字段名到前端期望的格式
         reports.value = response.data.map(item => ({
           id: item.id,
@@ -153,7 +209,7 @@ export default defineComponent({
           content: item.report_content,
           status: item.status,
           createdTime: item.create_time,
-          updatedTime: item.update_time
+          updatedTime: item.update_time,
         }))
         total.value = response.pagination.total
       } catch (error) {
@@ -162,21 +218,21 @@ export default defineComponent({
         loading.value = false
       }
     }
-    
+
     // 格式化日期
-    const formatDate = (dateString) => {
+    const formatDate = dateString => {
       const date = new Date(dateString)
       return date.toLocaleString()
     }
-    
+
     // 查看报告
-    const viewReport = (report) => {
+    const viewReport = report => {
       currentReport.value = report
       showReportDialog.value = true
     }
-    
+
     // 审核通过
-    const approveReport = async (reportId) => {
+    const approveReport = async reportId => {
       try {
         await reportService.updateSuggestReportStatus(reportId, 'approved')
         ElMessage.success('报告审核通过')
@@ -186,9 +242,9 @@ export default defineComponent({
         ElMessage.error('审核通过失败')
       }
     }
-    
+
     // 审核驳回
-    const rejectReport = async (reportId) => {
+    const rejectReport = async reportId => {
       try {
         await reportService.updateSuggestReportStatus(reportId, 'rejected')
         ElMessage.success('报告已驳回')
@@ -198,7 +254,7 @@ export default defineComponent({
         ElMessage.error('审核驳回失败')
       }
     }
-    
+
     // 提交创建报告
     const submitCreate = async () => {
       try {
@@ -206,35 +262,35 @@ export default defineComponent({
         showCreateDialog.value = false
         fetchReports()
         ElMessage.success('报告创建成功')
-        
+
         // 重置表单
         createForm.value = {
           reportName: '',
-          content: ''
+          content: '',
         }
       } catch (error) {
         console.error('创建报告失败:', error)
         ElMessage.error('创建报告失败')
       }
     }
-    
+
     // 处理当前页变化
-    const handleCurrentChange = (val) => {
+    const handleCurrentChange = val => {
       currentPage.value = val
       fetchReports()
     }
-    
+
     // 处理每页条数变化
-    const handleSizeChange = (val) => {
+    const handleSizeChange = val => {
       pageSize.value = val
       currentPage.value = 1
       fetchReports()
     }
-    
+
     onMounted(() => {
       fetchReports()
     })
-    
+
     return {
       reports,
       loading,
@@ -252,9 +308,9 @@ export default defineComponent({
       rejectReport,
       submitCreate,
       handleCurrentChange,
-      handleSizeChange
+      handleSizeChange,
     }
-  }
+  },
 })
 </script>
 

@@ -7,9 +7,9 @@ export const useReportStore = defineStore('reports', {
     reports: [],
     pendingReports: [],
     loading: false,
-    error: null
+    error: null,
   }),
-  
+
   actions: {
     async fetchReports() {
       this.loading = true
@@ -17,7 +17,9 @@ export const useReportStore = defineStore('reports', {
       try {
         const response = await reportService.getReports()
         this.reports = response.data
-        this.pendingReports = this.reports.filter(report => report.status === 'PENDING')
+        this.pendingReports = this.reports.filter(
+          report => report.status === 'PENDING'
+        )
       } catch (error) {
         this.error = error.message
         console.error('获取报告数据失败:', error)
@@ -25,7 +27,7 @@ export const useReportStore = defineStore('reports', {
         this.loading = false
       }
     },
-    
+
     async approveReport(reportId) {
       this.loading = true
       this.error = null
@@ -41,7 +43,7 @@ export const useReportStore = defineStore('reports', {
         this.loading = false
       }
     },
-    
+
     async rejectReport(reportId, reason) {
       this.loading = true
       this.error = null
@@ -56,6 +58,6 @@ export const useReportStore = defineStore('reports', {
       } finally {
         this.loading = false
       }
-    }
-  }
+    },
+  },
 })
