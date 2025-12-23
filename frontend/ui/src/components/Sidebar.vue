@@ -86,35 +86,52 @@ export default defineComponent({
   height: 100%;
   display: flex;
   flex-direction: column;
+  background-color: #2c3e50;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+  transition: var(--transition);
 }
 
 .sidebar-logo {
-  padding: 20px;
+  padding: var(--spacing-lg);
   text-align: center;
   border-bottom: 1px solid #34495e;
+  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
 }
 
 .sidebar-logo h2 {
   color: white;
-  font-size: 18px;
+  font-size: 20px;
   margin: 0;
+  font-weight: 600;
+  letter-spacing: 0.5px;
 }
 
 .el-menu-vertical-demo {
   border-right: none;
   height: calc(100% - 70px);
+  background-color: transparent;
 }
 
 .el-menu-item {
   margin: 5px 10px;
-  border-radius: 4px;
+  border-radius: var(--border-radius-md);
+  transition: var(--transition);
+  border: 1px solid transparent;
 }
 
 .el-menu-item:hover {
   background-color: #34495e !important;
+  transform: translateX(3px);
 }
 
 .el-menu-item.is-active {
-  background-color: #409eff !important;
+  background-color: var(--primary-color) !important;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+  border-color: var(--primary-light);
+}
+
+.el-menu-item .el-icon {
+  margin-right: 10px;
+  font-size: 16px;
 }
 </style>

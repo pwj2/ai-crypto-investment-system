@@ -8,6 +8,21 @@
       </template>
 
       <div class="tasks-content">
+        <!-- 错误状态显示 -->
+        <el-alert
+          v-if="error"
+          title="数据加载失败"
+          description="系统无法加载任务数据，请稍后重试。"
+          type="error"
+          :closable="false"
+          show-icon
+          class="tasks-error animate-fadeIn"
+        >
+          <template #default>
+            <el-button size="small" type="primary" @click="reloadData">重新加载</el-button>
+          </template>
+        </el-alert>
+        
         <div class="tasks-filters">
           <el-select
             v-model="statusFilter"
@@ -33,7 +48,13 @@
         </div>
 
         <div class="tasks-table">
+          <!-- 加载骨架屏 -->
+          <el-skeleton v-if="loading" animated style="margin-bottom: 20px;">
+            <el-skeleton-item variant="table" :rows="10" :columns="9"></el-skeleton-item>
+          </el-skeleton>
+          
           <el-table
+            v-else
             :data="filteredTasks"
             style="width: 100%"
             stripe
@@ -184,7 +205,8 @@ export default defineComponent({
     const typeFilter = ref('')
     const showTaskDialog = ref(false)
     const currentTask = ref(null)
-
+    const loading = ref(false)
+    const error = ref(false)
     // 模拟任务数据
     tasks.value = [
       {
@@ -256,14 +278,29 @@ export default defineComponent({
 
     // 获取任务列表
     const fetchTasks = async () => {
+      loading.value = true
+      error.value = false
       try {
         const data = await taskService.getTasks()
         tasks.value = data
-      } catch (error) {
-        console.error('获取任务列表失败:', error)
+      } catch (err) {
+        console.error('获取任务列表失败:', err)
+        error.value = true
+        tasks.value = []
+      } finally {
+        loading.value = false
       }
     }
+<<<<<<< HEAD
 
+=======
+    
+    // 重新加载数据
+    const reloadData = () => {
+      fetchTasks()
+    }
+    
+>>>>>>> 12401935e38ed27721d8e47e87ba3733a09dc087
     // 格式化日期
     const formatDate = dateString => {
       const date = new Date(dateString)
@@ -335,7 +372,10 @@ export default defineComponent({
       filteredTasks,
       showTaskDialog,
       currentTask,
+      loading,
+      error,
       fetchTasks,
+      reloadData,
       formatDate,
       getTaskTypeLabel,
       getTaskTypeColor,
@@ -371,10 +411,62 @@ export default defineComponent({
   white-space: pre-wrap;
   word-wrap: break-word;
   margin: 0;
-  padding: 10px;
-  background-color: #f5f7fa;
-  border-radius: 4px;
-  max-height: 300px;
-  overflow-y: auto;
+    padding: 10px;
+    background-color: #f5f7fa;
+    border-radius: 4px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .tasks-filters {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .tasks-filters .el-select {
+    width: 100% !important;
+    margin-left: 0 !important;
+  }
+  
+  .el-table {
+    font-size: 12px;
+  }
+  
+  .el-table-column {
+    padding: 5px;
+  }
+  
+  .el-descriptions {
+    font-size: 12px;
+  }
+  
+  .el-descriptions-item {
+    padding: 8px;
+  }
+  
+  .el-dialog {
+    width: 95% !important;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 576px) {
+  .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .tasks-table {
+    overflow-x: auto;
+  }
+  
+  .task-detail pre {
+    font-size: 12px;
+    max-height: 200px;
+  }
 }
 </style>

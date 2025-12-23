@@ -9,7 +9,21 @@
           >
         </div>
       </template>
-
+      
+      <!-- 错误状态显示 -->
+      <el-alert
+        v-if="error"
+        title="数据加载失败"
+        description="系统无法加载持仓数据，请稍后重试。"
+        type="error"
+        :closable="false"
+        show-icon
+        class="holdings-error animate-fadeIn"
+      >
+        <template #default>
+          <el-button size="small" type="primary" @click="reloadData">重新加载</el-button>
+        </template>
+      </el-alert>
       <div class="holdings-content">
         <div class="holdings-chart">
           <el-card shadow="hover" class="chart-card">
@@ -18,7 +32,11 @@
                 <h3>资产分布</h3>
               </div>
             </template>
-            <div id="holdings-chart" ref="chartRef"></div>
+            <!-- 加载状态骨架屏 -->
+            <el-skeleton v-if="loading" animated>
+              <el-skeleton-item variant="rect" style="width: 100%; height: 300px;"></el-skeleton-item>
+            </el-skeleton>
+            <div v-else id="holdings-chart" ref="chartRef"></div>
           </el-card>
         </div>
 
@@ -30,6 +48,7 @@
             border
             height="500px"
             virtual-scroll-y
+            v-loading="loading"
           >
             <el-table-column prop="id" label="ID" width="80"></el-table-column>
             <el-table-column label="货币名称" width="120">
@@ -177,7 +196,8 @@ export default defineComponent({
     let chart = null
     const showUpdateDialog = ref(false)
     const updateForm = ref({ holdings: [] })
-
+    const loading = ref(false)
+    const error = ref(false)
     // 常用加密货币列表
     const cryptoCurrencies = [
       { value: 'BTC', label: '比特币 (BTC)' },
@@ -208,7 +228,11 @@ export default defineComponent({
 
     // 获取当前持仓
     const fetchHoldings = async () => {
+      loading.value = true
+      error.value = false
       try {
+        // 模拟网络延迟
+        await new Promise(resolve => setTimeout(resolve, 500))
         const data = await holdingsService.getCurrentHoldings()
         // 映射后端数据到前端期望的格式
         const formattedData = data.map(item => ({
@@ -234,9 +258,17 @@ export default defineComponent({
 
         holdings.value = formattedData
         initChart(formattedData)
-      } catch (error) {
-        console.error('获取持仓失败:', error)
+      } catch (err) {
+        console.error('获取持仓失败:', err)
+        error.value = true
+        holdings.value = []
+      } finally {
+        loading.value = false
       }
+    }
+
+    const reloadData = () => {
+      fetchHoldings()
     }
 
     // 初始化图表
@@ -280,6 +312,18 @@ export default defineComponent({
         }
 
         chart.setOption(option)
+        
+        // 添加点击事件处理
+        chart.on('click', (params) => {
+          console.log('点击了资产分布:', params)
+          if (window.$message) {
+            window.$message({
+              message: `${params.name}: $${params.value.toLocaleString()} (${params.percent}%)`,
+              type: 'success',
+              duration: 2000
+            })
+          }
+        })
       }
     }
 
@@ -366,7 +410,10 @@ export default defineComponent({
       chartRef,
       showUpdateDialog,
       updateForm,
+      loading,
+      error,
       fetchHoldings,
+      reloadData,
       formatDate,
       handleClose,
       addHolding,
@@ -386,6 +433,11 @@ export default defineComponent({
   padding: 0;
 }
 
+/* 错误提示样式 */
+.holdings-error {
+  margin-bottom: var(--spacing-lg);
+}
+
 .card-header {
   display: flex;
   justify-content: space-between;
@@ -396,6 +448,7 @@ export default defineComponent({
   display: flex;
   gap: 20px;
   margin-top: 20px;
+  flex-wrap: wrap;
 }
 
 .holdings-chart {
@@ -414,7 +467,51 @@ export default defineComponent({
 
 .holdings-table {
   flex: 1;
-  min-width: 500px;
+  min-width: 300px;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .holdings-content {
+    flex-direction: column;
+  }
+  
+  .chart-card {
+    height: 300px;
+  }
+  
+  #holdings-chart {
+    height: 200px;
+  }
+  
+  .el-dialog {
+    width: 95% !important;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 576px) {
+  .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .chart-card {
+    height: 250px;
+  }
+  
+  #holdings-chart {
+    height: 150px;
+  }
+  
+  .el-table {
+    font-size: 12px;
+  }
+  
+  .el-table-column {
+    padding: 5px;
+  }
 }
 
 .dialog-footer {

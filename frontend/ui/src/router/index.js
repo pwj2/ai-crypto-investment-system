@@ -11,6 +11,11 @@ const routes = [
     component: () => import('../views/Login.vue'),
   },
   {
+    path: '/register',
+    name: 'Register',
+    component: () => import('../views/Register.vue')
+  },
+  {
     path: '/dashboard',
     name: 'Dashboard',
     component: () => import('../views/Dashboard.vue'),
@@ -45,6 +50,11 @@ const routes = [
     name: 'Tasks',
     component: () => import('../views/Tasks.vue'),
   },
+  {
+    path: '/debug-monitor',
+    name: 'DebugMonitor',
+    component: () => import('../views/DebugMonitor.vue'),
+  }
 ]
 
 const router = createRouter({
